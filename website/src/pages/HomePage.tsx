@@ -216,7 +216,7 @@ export default function HomePage() {
                             <div>
                                 <h3 className="text-lg font-semibold text-white mb-1">MCP Server</h3>
                                 <p className="text-zinc-400 text-sm mb-3">
-                                    9 tools over the Model Context Protocol. <code className="text-primary-400 text-xs">decide init</code> creates the config — Claude Code, Cursor, Windsurf, and Antigravity connect automatically.
+                                    9 tools over the Model Context Protocol. Works with Claude Code, Cursor, Windsurf, and Antigravity.
                                 </p>
                                 <Link to="/docs/mcp" className="text-xs text-zinc-500 hover:text-primary-400 transition-colors">
                                     MCP Server docs →
@@ -231,7 +231,7 @@ export default function HomePage() {
             <section id="install" className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-b border-white/5 relative z-10">
                 <h2 className="text-2xl font-bold text-white mb-3 text-center">Install</h2>
                 <p className="text-zinc-500 text-center mb-10">
-                    Two commands. Your AI connects automatically.
+                    Install, initialize, and connect your AI.
                 </p>
 
                 <div className="space-y-4 max-w-2xl mx-auto">
@@ -239,6 +239,7 @@ export default function HomePage() {
                         { label: 'Install the CLI', command: 'npm install -g decisionnode' },
                         { label: 'Initialize in your project', command: 'cd your-project && decide init' },
                         { label: 'Set up your Gemini API key (free)', command: 'decide setup' },
+                        { label: 'Connect to your AI (e.g. Claude Code)', command: 'claude mcp add decisionnode -s user decide-mcp' },
                     ].map((step, i) => (
                         <div key={i} className="bento-card p-4">
                             <div className="flex items-center justify-between mb-2">
@@ -260,9 +261,9 @@ export default function HomePage() {
                 </div>
 
                 <p className="text-center text-zinc-500 text-sm mt-8">
-                    <code className="text-primary-400 text-xs">decide init</code> creates the MCP config automatically.
-                    <Link to="/docs/quickstart" className="text-primary-400 hover:text-primary-300 ml-1">
-                        Full quickstart →
+                    Restart your AI client after connecting.
+                    <Link to="/docs/mcp" className="text-primary-400 hover:text-primary-300 ml-1">
+                        Setup for other clients →
                     </Link>
                 </p>
             </section>
@@ -276,7 +277,7 @@ export default function HomePage() {
                     Everything runs locally. Your decisions stay on your machine. The only external call is to Gemini's embedding API (free tier).
                 </p>
                 <p className="text-zinc-500 max-w-xl mx-auto mb-8 text-sm">
-                    The CLI and MCP server are just the beginning — there's a VS Code extension, a marketplace for shared decision packs, and cloud sync being worked on. Contributions to any of these are welcome. Bug fixes, features, docs improvements, or just a star on the repo.
+                    Bug fixes, new features, docs improvements, or just a star on the repo — all contributions are welcome.
                 </p>
                 <a
                     href="https://github.com/decisionnode/decisionnode"

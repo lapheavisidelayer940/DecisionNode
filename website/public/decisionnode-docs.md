@@ -11,7 +11,7 @@ DecisionNode stores decisions as scoped JSON objects, embeds them as vectors usi
 DecisionNode has two interfaces that share the same data store (`~/.decisionnode/`):
 
 - **CLI (`decide` or `decisionnode`) — for you.** Setup, add decisions, search, export/import, check embedding health, configure settings. Supports interactive prompts or one-command inline flags.
-- **MCP server (`decide-mcp`) — for your AI.** `decide init` creates a `.mcp.json` in your project so AI clients connect automatically. The AI calls tools like `search_decisions` and `add_decision` over MCP with structured JSON input/output. Works with Claude Code, Cursor, Windsurf, Antigravity, or any MCP-compliant tool.
+- **MCP server (`decide-mcp`) — for your AI.** The AI calls tools like `search_decisions` and `add_decision` over MCP with structured JSON input/output. You connect it to your AI client once (e.g. `claude mcp add decisionnode -s user decide-mcp` for Claude Code). Works with Claude Code, Cursor, Windsurf, Antigravity, or any MCP-compliant client.
 
 The CLI handles setup and maintenance (init, setup, embed, clean, export, import, config). The MCP server handles the AI's workflow (search, add, update, delete) with automatic conflict detection.
 
@@ -39,7 +39,7 @@ cd your-project
 decide init
 ```
 
-Creates `~/.decisionnode/.decisions/<ProjectName>/` and a `.mcp.json` for AI client integration.
+Creates `~/.decisionnode/.decisions/<ProjectName>/`.
 
 ### 2. Set up your API key
 
@@ -49,7 +49,17 @@ decide setup
 
 Get a free key from [Google AI Studio](https://aistudio.google.com/) and paste it when prompted. Saved to `~/.decisionnode/.env`.
 
-### 3. Add a decision
+### 3. Connect your AI
+
+For Claude Code (run once, works in every project):
+
+```bash
+claude mcp add decisionnode -s user decide-mcp
+```
+
+Restart Claude Code after running this. For Cursor/Windsurf/Antigravity, add `decide-mcp` as the command in their MCP settings. See the MCP Server section below for all clients.
+
+### 4. Add a decision
 
 ```bash
 decide add
@@ -67,15 +77,11 @@ Or add in one command:
 decide add -s UI -d "Use Tailwind for all styling" -r "Consistent tokens" -c "No arbitrary values"
 ```
 
-### 4. Search
+### 5. Search
 
 ```bash
 decide search "how should we style components?"
 ```
-
-### 5. Your AI is already connected
-
-`decide init` created `.mcp.json`. AI clients like Claude Code and Cursor read it automatically.
 
 ---
 
@@ -201,7 +207,7 @@ All commands work with both `decide` and `decisionnode` — they're the same com
 
 ### Core Commands
 
-- `decide init` — initialize project, creates `.mcp.json`
+- `decide init` — initialize project store
 - `decide setup` — configure Gemini API key interactively
 - `decide add` — add a decision interactively
 - `decide add -s <scope> -d <decision> [-r <rationale>] [-c <constraints>]` — add in one command
