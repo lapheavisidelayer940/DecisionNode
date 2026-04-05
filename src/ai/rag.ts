@@ -278,6 +278,9 @@ export async function embedAllDecisions(): Promise<{ embedded: string[]; failed:
     return { embedded, failed };
 }
 
+// Exported for testing
+export { cosineSimilarity as _cosineSimilarity, getDecisionText as _getDecisionText, getVectorFromEntry as _getVectorFromEntry };
+
 /**
  * Find potential conflicts with existing decisions
  * Uses semantic similarity to find decisions that might contradict a new one

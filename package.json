@@ -40,7 +40,9 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "prepublishOnly": "npm run build"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build && npm run test"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -52,6 +54,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.19.27",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^4.1.2"
   }
 }
