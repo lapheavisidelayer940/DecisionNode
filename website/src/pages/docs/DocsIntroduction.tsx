@@ -101,7 +101,7 @@ export default function DocsIntroduction() {
                         </div>
                         <div className="bg-zinc-900/50 p-5 rounded-lg border border-zinc-800">
                             <p className="text-zinc-200 font-semibold mb-2">MCP server — for your AI</p>
-                            <p className="text-sm">The <code>decide-mcp</code> binary. <code>decide init</code> creates a <code>.mcp.json</code> in your project so AI clients connect automatically. The AI calls tools like <code>search_decisions</code> and <code>add_decision</code> over <a href="https://modelcontextprotocol.io" className="text-primary-400 hover:underline" target="_blank" rel="noopener noreferrer">MCP</a>. Works with Claude Code, Cursor, Windsurf, Antigravity, or any MCP-compliant tool.</p>
+                            <p className="text-sm">The <code>decide-mcp</code> binary. Connect it once (e.g. <code>claude mcp add decisionnode -s user decide-mcp</code> for Claude Code) and the AI calls tools like <code>search_decisions</code> and <code>add_decision</code> over <a href="https://modelcontextprotocol.io" className="text-primary-400 hover:underline" target="_blank" rel="noopener noreferrer">MCP</a>. Works with Claude Code, Cursor, Windsurf, Antigravity, or any MCP-compliant tool.</p>
                         </div>
                     </div>
                     <p className="text-sm mt-4">

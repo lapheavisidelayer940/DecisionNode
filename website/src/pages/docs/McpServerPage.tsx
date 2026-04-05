@@ -77,18 +77,26 @@ export default function McpServerPage() {
 
             <Section title="Setup" id="setup">
                 <p className="text-zinc-400 mb-4">
-                    For most AI clients, <code>decide init</code> handles this automatically — it creates a <code>.mcp.json</code> file in your project directory that your AI client reads on startup.
-                </p>
-                <CodeBlock code={`cd your-project
-decide init     # creates .mcp.json
-decide setup    # configure your Gemini API key`} />
-                <p className="text-zinc-400 mt-4 mb-2 text-sm">
-                    After running both commands, <strong className="text-zinc-200">restart your AI client</strong> (e.g. restart Claude Code) so it picks up the new <code>.mcp.json</code>. It will ask you to approve the DecisionNode server on first use. Works with <strong className="text-zinc-200">Claude Code</strong>, <strong className="text-zinc-200">Cursor</strong>, and other tools that read <code>.mcp.json</code> from the project root.
+                    After installing DecisionNode, connect the MCP server to your AI client.
                 </p>
 
-                <h3 className="text-zinc-200 font-bold mb-2 mt-8">Claude Desktop (manual)</h3>
+                <h3 className="text-zinc-200 font-bold mb-2">Claude Code</h3>
+                <p className="text-zinc-400 text-sm mb-3">
+                    Run this once — it registers the MCP server globally so it works in every project:
+                </p>
+                <CodeBlock code="claude mcp add decisionnode -s user decide-mcp" />
+                <p className="text-zinc-400 text-sm mt-3">
+                    Restart Claude Code after running this. You can verify it's connected with <code>/mcp</code> — it should show under "User MCPs".
+                </p>
+
+                <h3 className="text-zinc-200 font-bold mb-2 mt-8">Cursor / Windsurf / Antigravity</h3>
+                <p className="text-zinc-400 text-sm mb-3">
+                    Each has its own MCP settings panel. Use the command <code>decide-mcp</code> with no arguments.
+                </p>
+
+                <h3 className="text-zinc-200 font-bold mb-2 mt-8">Claude Desktop</h3>
                 <p className="text-zinc-400 text-sm mb-2">
-                    Claude Desktop uses its own config file instead of <code>.mcp.json</code>:
+                    Add to the config file manually:
                 </p>
                 <p className="text-sm text-zinc-500 mb-2 font-mono">
                     ~/Library/Application Support/Claude/claude_desktop_config.json (macOS)<br />
@@ -97,16 +105,11 @@ decide setup    # configure your Gemini API key`} />
                 <CodeBlock code={`{
   "mcpServers": {
     "decisionnode": {
-      "command": "npx",
-      "args": ["-y", "decisionnode", "start-server"]
+      "command": "decide-mcp",
+      "args": []
     }
   }
 }`} />
-
-                <h3 className="text-zinc-200 font-bold mb-2 mt-8">Other clients</h3>
-                <p className="text-zinc-400 text-sm">
-                    If your AI client has its own MCP settings panel, use the command <code>decide-mcp</code> with no arguments.
-                </p>
             </Section>
 
             <Section title="Tools (9)" id="tools">

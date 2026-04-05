@@ -235,7 +235,9 @@ All commands work with both `decide` and `decisionnode` — they're the same com
 
 ### Setup
 
-`decide init` creates `.mcp.json` in your project. After running `decide init` and `decide setup`, restart your AI client (e.g. restart Claude Code) so it picks up the config. It will ask you to approve the server on first use.
+For Claude Code, run once: `claude mcp add decisionnode -s user decide-mcp`, then restart Claude Code.
+
+For Cursor/Windsurf, use `decide-mcp` with no arguments in their MCP settings panel.
 
 For Claude Desktop, add manually to its config file:
 

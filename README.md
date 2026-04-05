@@ -25,11 +25,12 @@ Not a markdown file. A queryable memory layer with semantic search.
 ```bash
 npm install -g decisionnode
 cd your-project
-decide init      # creates project store + .mcp.json for AI clients
+decide init      # creates project store
 decide setup     # configure Gemini API key (free tier)
-```
 
-`decide init` creates a `.mcp.json` in your project — AI clients like Claude Code and Cursor connect automatically.
+# Connect to Claude Code (run once)
+claude mcp add decisionnode -s user decide-mcp
+```
 
 ## How it works
 
