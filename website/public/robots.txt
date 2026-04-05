@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://decisionnode.dev/sitemap.xml
