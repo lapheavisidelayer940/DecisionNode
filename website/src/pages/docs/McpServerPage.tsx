@@ -89,9 +89,19 @@ export default function McpServerPage() {
                     Restart Claude Code after running this. You can verify it's connected with <code>/mcp</code> — it should show under "User MCPs".
                 </p>
 
-                <h3 className="text-zinc-200 font-bold mb-2 mt-8">Cursor / Windsurf / Antigravity</h3>
+                <h3 className="text-zinc-200 font-bold mb-2 mt-8">Cursor</h3>
                 <p className="text-zinc-400 text-sm mb-3">
-                    Each has its own MCP settings panel. Use the command <code>decide-mcp</code> with no arguments.
+                    Go to <strong className="text-zinc-200">Cursor Settings → MCP</strong> → click "Add MCP Server" → set the command to <code>decide-mcp</code> with no arguments.
+                </p>
+
+                <h3 className="text-zinc-200 font-bold mb-2 mt-8">Windsurf</h3>
+                <p className="text-zinc-400 text-sm mb-3">
+                    Go to <strong className="text-zinc-200">Windsurf Settings → MCP</strong> → add a new server → set the command to <code>decide-mcp</code> with no arguments.
+                </p>
+
+                <h3 className="text-zinc-200 font-bold mb-2 mt-8">Antigravity</h3>
+                <p className="text-zinc-400 text-sm mb-3">
+                    Go to <strong className="text-zinc-200">Settings → MCP Servers</strong> → add <code>decide-mcp</code> as the command with no arguments.
                 </p>
 
                 <h3 className="text-zinc-200 font-bold mb-2 mt-8">Claude Desktop</h3>

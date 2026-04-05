@@ -795,29 +795,14 @@ async function handleInit() {
     const projectRoot = getProjectRoot();
     await fs.mkdir(projectRoot, { recursive: true });
 
-    // Create .mcp.json for AI client integration (Claude Code, Cursor, etc.)
-    const mcpConfigPath = path.join(cwd, '.mcp.json');
-    try {
-        await fs.access(mcpConfigPath);
-        // Already exists — don't overwrite
-        console.log('   .mcp.json already exists (skipped)');
-    } catch {
-        const mcpConfig = {
-            mcpServers: {
-                decisionnode: {
-                    command: 'decide-mcp',
-                    args: []
-                }
-            }
-        };
-        await fs.writeFile(mcpConfigPath, JSON.stringify(mcpConfig, null, 2) + '\n', 'utf-8');
-        console.log('   Created .mcp.json (connects AI clients to DecisionNode)');
-    }
-
     console.log('\n✅ DecisionNode initialized!\n');
     console.log('Next steps:');
-    console.log('  1. Configure your API key:    decide setup');
-    console.log('  2. Add your first decision:   decide add\n');
+    console.log('  1. Configure your API key:       decide setup');
+    console.log('  2. Connect your AI client:');
+    console.log('     Claude Code:                  claude mcp add decisionnode -s user decide-mcp');
+    console.log('     Cursor:                       Add decide-mcp in Cursor Settings → MCP');
+    console.log('     Windsurf:                     Add decide-mcp in Windsurf Settings → MCP');
+    console.log('  3. Add your first decision:      decide add\n');
 }
 
 async function handleSetup() {
