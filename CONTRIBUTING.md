@@ -80,9 +80,28 @@ npm run dev
 3. Make your changes
 4. Make sure it builds: `npx tsc`
 5. Test it: `node dist/cli.js help`
-6. Open a PR against `main`
+6. Commit using conventional commits (see below)
+7. Open a PR against `main`
 
 Keep PRs focused — one feature or fix per PR is easier to review.
+
+## Commit messages
+
+We use [Conventional Commits](https://www.conventionalcommits.org/). Format:
+
+```
+type: short description
+```
+
+Types:
+- `feat:` — new feature (`feat: add decide export --csv`)
+- `fix:` — bug fix (`fix: handle missing vectors.json gracefully`)
+- `docs:` — documentation changes (`docs: update CLI reference with deprecate command`)
+- `chore:` — maintenance, config, dependencies (`chore: update gemini SDK to v2`)
+- `refactor:` — code change that doesn't fix a bug or add a feature
+- `test:` — adding or updating tests
+
+Use a scope if it helps: `feat(mcp): add conflict detection to add_decision`
 
 ## Reporting bugs
 
