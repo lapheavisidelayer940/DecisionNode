@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "decisionnode": {
+      "command": "decide-mcp",
+      "args": []
+    }
+  }
+}

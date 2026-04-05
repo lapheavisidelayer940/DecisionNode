@@ -1,0 +1,232 @@
+{
+    "name": "decisionnode-vscode",
+    "displayName": "DecisionNode",
+    "description": "Visualize and manage your project's architectural decisions",
+    "version": "0.0.1",
+    "publisher": "decisionnode",
+    "license": "AGPL-3.0-only",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/AmmarSaleh50/decisionnode"
+    },
+    "engines": {
+        "vscode": "^1.85.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onView:decisionTree",
+        "onView:commitTimeline"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "decisionnode",
+                    "title": "DecisionNode",
+                    "icon": "media/icon.svg"
+                }
+            ]
+        },
+        "views": {
+            "decisionnode": [
+                {
+                    "id": "decisionTree",
+                    "name": "Decisions",
+                    "icon": "media/icon.svg"
+                },
+                {
+                    "id": "cloudSync",
+                    "name": "Cloud Sync"
+                },
+                {
+                    "id": "commitTimeline",
+                    "name": "History"
+                }
+            ]
+        },
+        "commands": [
+            {
+                "command": "decisionnode.refresh",
+                "title": "Refresh",
+                "icon": "$(refresh)"
+            },
+            {
+                "command": "decisionnode.viewDecision",
+                "title": "View Decision"
+            },
+            {
+                "command": "decisionnode.viewCommit",
+                "title": "View Commit Changes"
+            },
+            {
+                "command": "decisionnode.checkout",
+                "title": "Checkout Commit"
+            },
+            {
+                "command": "decisionnode.setup",
+                "title": "DecisionNode: Setup AI Integration",
+                "icon": "$(gear)"
+            },
+            {
+                "command": "decisionnode.editDecision",
+                "title": "Edit Decision",
+                "icon": "$(edit)"
+            },
+            {
+                "command": "decisionnode.deleteDecision",
+                "title": "Delete Decision",
+                "icon": "$(trash)"
+            },
+            {
+                "command": "decisionnode.addDecision",
+                "title": "Add Decision",
+                "icon": "$(add)"
+            },
+            {
+                "command": "decisionnode.embed",
+                "title": "Embed Decisions",
+                "icon": "$(zap)"
+            },
+            {
+                "command": "decisionnode.revealFile",
+                "title": "Reveal in File Explorer",
+                "icon": "$(go-to-file)"
+            },
+            {
+                "command": "decisionnode.cloudSync",
+                "title": "Sync (Push & Pull)",
+                "icon": "$(sync)"
+            },
+            {
+                "command": "decisionnode.cloudPush",
+                "title": "Push to Cloud",
+                "icon": "$(cloud-upload)"
+            },
+            {
+                "command": "decisionnode.cloudPull",
+                "title": "Pull from Cloud",
+                "icon": "$(cloud-download)"
+            },
+            {
+                "command": "decisionnode.fetch",
+                "title": "Fetch (Check for Updates)",
+                "icon": "$(cloud)"
+            },
+            {
+                "command": "decisionnode.deleteScope",
+                "title": "Delete Scope",
+                "icon": "$(trash)"
+            },
+            {
+                "command": "decisionnode.filterHistory",
+                "title": "Filter History",
+                "icon": "$(filter)"
+            }
+        ],
+        "viewsWelcome": [
+            {
+                "view": "decisionTree",
+                "contents": "No decisions found for this project.\n\nRun `npx decide add` in terminal to add your first decision.\n\n[Configure API Key](command:decisionnode.setup) to enable semantic search."
+            },
+            {
+                "view": "commitTimeline",
+                "contents": "No activity history yet.\nAdd some decisions to start tracking changes."
+            },
+            {
+                "view": "cloudSync",
+                "contents": "Cloud sync status.\n\nRun `npx decide login` to enable cloud features.\n\n[Sync to Cloud](command:decisionnode.cloudSync)"
+            }
+        ],
+        "menus": {
+            "view/title": [
+                {
+                    "command": "decisionnode.refresh",
+                    "when": "view == decisionTree || view == commitTimeline",
+                    "group": "navigation"
+                },
+                {
+                    "command": "decisionnode.filterHistory",
+                    "when": "view == commitTimeline",
+                    "group": "navigation"
+                },
+                {
+                    "command": "decisionnode.cloudPush",
+                    "when": "view == cloudSync",
+                    "group": "navigation"
+                },
+                {
+                    "command": "decisionnode.cloudPull",
+                    "when": "view == cloudSync",
+                    "group": "navigation"
+                },
+                {
+                    "command": "decisionnode.fetch",
+                    "when": "view == cloudSync",
+                    "group": "navigation"
+                },
+                {
+                    "command": "decisionnode.cloudSync",
+                    "when": "view == cloudSync",
+                    "group": "navigation"
+                },
+                {
+                    "command": "decisionnode.refresh",
+                    "when": "view == cloudSync",
+                    "group": "navigation"
+                },
+                {
+                    "command": "decisionnode.embed",
+                    "when": "view == decisionTree",
+                    "group": "navigation"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "decisionnode.viewDecision",
+                    "when": "view == decisionTree && viewItem == decision",
+                    "group": "1_open"
+                },
+                {
+                    "command": "decisionnode.editDecision",
+                    "when": "view == decisionTree && viewItem == decision",
+                    "group": "inline"
+                },
+                {
+                    "command": "decisionnode.deleteDecision",
+                    "when": "view == decisionTree && viewItem == decision",
+                    "group": "inline"
+                },
+                {
+                    "command": "decisionnode.revealFile",
+                    "when": "view == decisionTree && viewItem == scope"
+                },
+                {
+                    "command": "decisionnode.deleteScope",
+                    "when": "view == decisionTree && viewItem == scope",
+                    "group": "2_modify"
+                },
+                {
+                    "command": "decisionnode.viewCommit",
+                    "when": "view == commitTimeline && viewItem == commit"
+                }
+            ]
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "lint": "eslint src --ext ts"
+    },
+    "devDependencies": {
+        "@types/node": "^20.0.0",
+        "@types/vscode": "^1.85.0",
+        "@typescript-eslint/eslint-plugin": "^6.0.0",
+        "@typescript-eslint/parser": "^6.0.0",
+        "eslint": "^8.0.0",
+        "typescript": "^5.0.0"
+    }
+}

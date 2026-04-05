@@ -1,0 +1,111 @@
+import { Section, Steps, Step, CodeBlock } from '../../components/docs/DocsComponents';
+import { Link } from 'react-router-dom';
+
+export default function WorkflowsPage() {
+    return (
+        <div className="animate-fade-in max-w-4xl mx-auto pb-20">
+            <div className="flex items-center gap-2 text-sm text-zinc-500 mb-8 font-mono">
+                <Link to="/docs" className="hover:text-primary-400 transition-colors">Docs</Link>
+                <span className="text-zinc-700">/</span>
+                <span className="text-primary-400">Guides</span>
+            </div>
+
+            <div className="mb-12">
+                <h1 className="text-4xl font-bold text-white mb-6">Common Workflows</h1>
+                <p className="text-xl text-zinc-400 leading-relaxed border-l-2 border-primary-500/50 pl-6">
+                    How DecisionNode fits into your day-to-day development.
+                </p>
+            </div>
+
+            <Section title="Search, decide, code" id="search-decide-code">
+                <p className="text-zinc-400 mb-6">
+                    The basic loop: check what's already been decided, then code.
+                </p>
+
+                <Steps>
+                    <Step title="1. Search before you start">
+                        <p>Before working on something, check if there are existing conventions:</p>
+                        <CodeBlock code={`decide search "how do we handle error logging?"`} />
+                        <p>If the <Link to="/docs/mcp" className="text-primary-400 hover:underline">MCP server</Link> is connected, your AI does this automatically — the <Link to="/docs/setup#search-sensitivity" className="text-primary-400 hover:underline">search sensitivity</Link> setting controls how aggressively.</p>
+                    </Step>
+
+                    <Step title="2. Record decisions as you go">
+                        <p>When you agree on an approach, record it — interactively or in one command:</p>
+                        <CodeBlock code={`decide add
+# or inline:
+decide add -s UI -d "Use Tailwind" -r "Consistent tokens"`} />
+                        <p>Or the AI calls <code>add_decision</code> through MCP. If a <Link to="/docs/context#conflict-detection" className="text-primary-400 hover:underline">similar decision already exists</Link>, you'll be warned before it's saved.</p>
+                    </Step>
+
+                    <Step title="3. Code">
+                        <p>The next time you or a different AI session works in this area, the decisions will be there. No need to re-explain conventions.</p>
+                    </Step>
+                </Steps>
+            </Section>
+
+            <Section title="New AI sessions" id="new-sessions">
+                <p className="text-zinc-400 mb-4">
+                    Decisions persist across sessions. When you start a new AI chat, the AI searches DecisionNode before writing code (if the MCP server is connected). It picks up all existing conventions without you having to repeat anything.
+                </p>
+                <p className="text-zinc-400 text-sm">
+                    With search sensitivity set to <code>high</code> (default), the AI is instructed to search before every code change. On <code>medium</code>, it searches only for significant changes. See <Link to="/docs/mcp#search-sensitivity" className="text-primary-400 hover:underline">search sensitivity</Link>.
+                </p>
+            </Section>
+
+            <Section title="Global decisions" id="global-decisions">
+                <p className="text-zinc-400 mb-4">
+                    Some decisions apply across all your projects — things like "always use TypeScript strict mode" or "never commit .env files":
+                </p>
+                <CodeBlock code={`decide add --global`} />
+                <p className="text-zinc-400 mt-4 text-sm">
+                    Global decisions are automatically included in search results for every project. If a project decision conflicts with a global one, the project decision takes priority. See <Link to="/docs/cli#global-decisions" className="text-primary-400 hover:underline">global decisions</Link> in the CLI reference.
+                </p>
+            </Section>
+
+            <Section title="Deprecating decisions" id="deprecating">
+                <p className="text-zinc-400 mb-4">
+                    When a convention is no longer relevant, deprecate it instead of deleting. Deprecated decisions are hidden from search but you can bring them back if you change your mind:
+                </p>
+                <CodeBlock code={`# Hide from search
+decide deprecate ui-015
+
+# Bring it back
+decide activate ui-015`} />
+                <p className="text-zinc-400 mt-4 text-sm">
+                    Deprecated decisions still show up in <code>decide list</code> (marked with ⚠️). The <Link to="/docs/decisions#lifecycle" className="text-primary-400 hover:underline">embedding is preserved</Link>, so re-activating is instant. See <Link to="/docs/decisions#lifecycle" className="text-primary-400 hover:underline">lifecycle</Link>.
+                </p>
+            </Section>
+
+            <Section title="Moving decisions between projects" id="migrating">
+                <p className="text-zinc-400 mb-4">
+                    Export from one project and import into another:
+                </p>
+                <CodeBlock code={`# Export — saves to a file you choose
+cd old-project
+decide export json > ~/decisions.json
+
+# Import — point to that file from another project
+cd new-project
+decide init
+decide import ~/decisions.json`} />
+                <p className="text-zinc-400 mt-4 text-sm">
+                    <code>decide export</code> prints to the terminal — the <code>{'>'}</code> redirects it into a file at the path you specify. Imported decisions are automatically embedded. Use <code>--global</code> on either command to export/import <Link to="/docs/cli#global-decisions" className="text-primary-400 hover:underline">global decisions</Link>.
+                </p>
+            </Section>
+
+            <Section title="Checking embedding health" id="health">
+                <p className="text-zinc-400 mb-4">
+                    If you've been adding decisions without an API key, or if embedding failed for some reason, decisions won't be searchable. Check and fix:
+                </p>
+                <CodeBlock code={`# See which decisions are missing embeddings
+decide check
+
+# Generate embeddings for anything that's missing
+decide embed
+
+# Clean up orphaned vectors from deleted decisions
+decide clean`} />
+            </Section>
+        </div>
+    );
+}

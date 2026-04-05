@@ -1,0 +1,39 @@
+# DecisionNode
+
+> Structured, queryable memory for development decisions. Stores architectural choices as vector embeddings, exposes them to AI agents via MCP.
+
+## Quick Install
+
+```bash
+npm install -g decisionnode
+cd your-project
+decide init    # creates project store + .mcp.json for AI clients
+decide setup   # configure Gemini API key (free tier)
+decide add     # add your first decision
+```
+
+## Two interfaces
+
+- **CLI (`decide` or `decisionnode`)** — for you. Add, search, list, edit, deprecate, export/import, configure.
+- **MCP server (`decide-mcp`)** — for your AI. `decide init` creates `.mcp.json` so AI clients connect automatically.
+
+## Documentation
+
+- [Introduction](https://decisionnode.dev/docs)
+- [Quickstart](https://decisionnode.dev/docs/quickstart)
+- [Installation](https://decisionnode.dev/docs/installation)
+- [Configuration](https://decisionnode.dev/docs/setup)
+- [Decision Nodes](https://decisionnode.dev/docs/decisions) — structure, fields, lifecycle
+- [Context Engine](https://decisionnode.dev/docs/context) — embedding, search, conflict detection
+- [CLI Reference](https://decisionnode.dev/docs/cli) — all commands
+- [MCP Server](https://decisionnode.dev/docs/mcp) — all 9 tools, setup
+- [Workflows](https://decisionnode.dev/docs/workflows) — common patterns
+
+## Full docs (single file)
+
+For complete documentation as a single markdown file: https://decisionnode.dev/decisionnode-docs.md
+
+## Links
+
+- GitHub: https://github.com/decisionnode/decisionnode
+- License: MIT

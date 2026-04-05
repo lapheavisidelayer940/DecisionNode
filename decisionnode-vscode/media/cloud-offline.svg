@@ -1,0 +1,8 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+	<defs>
+		<image  width="14" height="9" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAJCAMAAAA1k+1bAAAAAXNSR0IB2cksfwAAAGBQTFRFAAAA/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NX/2NXxTveLAAAACB0Uk5TAAQBNZK2tRJoewuO//L5GO1iHP74rxrXuyEM+rpf9rGJ4/OHAAAAUElEQVR4nEWM0QpAQBQFz5BS62HzIsr//x1JSAl327Xm6U6nuSjCIxW3sLMksiuoI64FS1B/paCaTVvOpLUF6jZlGvr1N8FgDzIejUxf644XqfwNd1KgRxcAAAAASUVORK5CYII="/>
+	</defs>
+	<style>
+	</style>
+	<use id="cloud-synced (1)" href="#img1" x="1" y="4"/>
+</svg>

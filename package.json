@@ -1,0 +1,58 @@
+{
+  "name": "decisionnode",
+  "version": "0.1.0",
+  "description": "A structured, queryable memory layer for development decisions - give your AI assistant context about your project",
+  "keywords": [
+    "decision-tracking",
+    "mcp",
+    "model-context-protocol",
+    "ai-assistant",
+    "claude",
+    "cursor",
+    "anthropic",
+    "openai",
+    "gemini",
+    "antigravity",
+    "development",
+    "architecture",
+    "context"
+  ],
+  "author": "DecisionNode",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/decisionnode/decisionnode"
+  },
+  "homepage": "https://github.com/decisionnode/decisionnode#readme",
+  "bugs": {
+    "url": "https://github.com/decisionnode/decisionnode/issues"
+  },
+  "type": "module",
+  "bin": {
+    "decide": "./dist/cli.js",
+    "decisionnode": "./dist/cli.js",
+    "decide-mcp": "./dist/mcp/server.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@modelcontextprotocol/sdk": "^1.25.1",
+    "dotenv": "^17.2.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.27",
+    "typescript": "^5.3.3"
+  }
+}
