@@ -1,9 +1,18 @@
-# DecisionNode
+<p align="center">
+  <img src="website/src/assets/images/DecisionNode-transparent.png" width="150" />
+</p>
 
-> Structured, queryable memory for development decisions. Stores architectural choices as vector embeddings, exposes them to AI agents via MCP.
+<h1 align="center">DecisionNode</h1>
 
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![npm](https://img.shields.io/npm/v/decisionnode.svg)
+<p align="center">
+  Structured, queryable memory for development decisions.<br/>
+  Stores architectural choices as vector embeddings, exposes them to AI agents via MCP.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" />
+  <img src="https://img.shields.io/npm/v/decisionnode.svg" alt="npm version" />
+</p>
 
 ---
 
