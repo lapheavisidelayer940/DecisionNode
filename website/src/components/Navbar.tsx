@@ -1,10 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { Github } from 'lucide-react';
+import { Github, Star } from 'lucide-react';
+import { useGitHubStars } from '../hooks/useGitHubStars';
 import logo from '../assets/images/DecisionNode-transparent.png';
 
 export default function Navbar() {
     const location = useLocation();
+    const stars = useGitHubStars();
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -68,12 +70,18 @@ export default function Navbar() {
                     {/* GitHub */}
                     <div className="flex items-center gap-4 z-10">
                         <a
-                            href="https://github.com/decisionnode/decisionnode"
+                            href="https://github.com/decisionnode/DecisionNode"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-zinc-400 hover:text-white transition-colors"
+                            className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors px-3 py-1.5 rounded-full border border-white/5 hover:border-white/10 bg-white/5 hover:bg-white/10"
                         >
-                            <Github className="w-5 h-5" />
+                            <Github className="w-4 h-4" />
+                            {stars !== null && (
+                                <span className="flex items-center gap-1 text-xs font-medium">
+                                    <Star className="w-3 h-3 text-yellow-500" />
+                                    {stars}
+                                </span>
+                            )}
                         </a>
                     </div>
                 </div>
