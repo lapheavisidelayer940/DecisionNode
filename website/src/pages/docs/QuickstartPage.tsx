@@ -78,12 +78,12 @@ decide init`} />
                     </p>
                 </Step>
 
-                <Step title="Your AI is already connected">
+                <Step title="Restart your AI client">
                     <p>
-                        The <code>decide init</code> step created a <code>.mcp.json</code> file in your project. AI clients like Claude Code and Cursor read this automatically — no extra configuration needed.
+                        The <code>decide init</code> step created a <code>.mcp.json</code> file in your project. Restart Claude Code (or your AI client) so it picks up the new MCP config. It will ask you to approve the DecisionNode server on first use.
                     </p>
                     <p>
-                        Your AI can now call <code>search_decisions</code> before writing code and <code>add_decision</code> when you agree on a new approach. For Claude Desktop or other clients, see the <Link to="/docs/mcp#setup" className="text-primary-400 hover:underline">MCP setup guide</Link>.
+                        After that, your AI can call <code>search_decisions</code> before writing code and <code>add_decision</code> when you agree on a new approach. For Claude Desktop or other clients, see the <Link to="/docs/mcp#setup" className="text-primary-400 hover:underline">MCP setup guide</Link>.
                     </p>
                 </Step>
             </Steps>

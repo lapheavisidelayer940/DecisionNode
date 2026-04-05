@@ -80,10 +80,10 @@ export default function McpServerPage() {
                     For most AI clients, <code>decide init</code> handles this automatically — it creates a <code>.mcp.json</code> file in your project directory that your AI client reads on startup.
                 </p>
                 <CodeBlock code={`cd your-project
-decide init
-# Creates .mcp.json automatically`} />
+decide init     # creates .mcp.json
+decide setup    # configure your Gemini API key`} />
                 <p className="text-zinc-400 mt-4 mb-2 text-sm">
-                    This works out of the box with <strong className="text-zinc-200">Claude Code</strong>, <strong className="text-zinc-200">Cursor</strong>, and other tools that read <code>.mcp.json</code> from the project root.
+                    After running both commands, <strong className="text-zinc-200">restart your AI client</strong> (e.g. restart Claude Code) so it picks up the new <code>.mcp.json</code>. It will ask you to approve the DecisionNode server on first use. Works with <strong className="text-zinc-200">Claude Code</strong>, <strong className="text-zinc-200">Cursor</strong>, and other tools that read <code>.mcp.json</code> from the project root.
                 </p>
 
                 <h3 className="text-zinc-200 font-bold mb-2 mt-8">Claude Desktop (manual)</h3>

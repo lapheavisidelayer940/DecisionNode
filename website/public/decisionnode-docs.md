@@ -235,7 +235,7 @@ All commands work with both `decide` and `decisionnode` — they're the same com
 
 ### Setup
 
-`decide init` creates `.mcp.json` in your project. Claude Code, Cursor, and other clients read it automatically.
+`decide init` creates `.mcp.json` in your project. After running `decide init` and `decide setup`, restart your AI client (e.g. restart Claude Code) so it picks up the config. It will ask you to approve the server on first use.
 
 For Claude Desktop, add manually to its config file:
 
