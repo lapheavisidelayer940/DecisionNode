@@ -21,7 +21,7 @@
   <img src="website/public/recordings/demo.gif" alt="DecisionNode Demo" width="800" />
 </p>
 
-Record a decision, embed it as a vector, search it later. Works from the CLI or through your AI via MCP. Same store, every tool.
+Record a decision, embed it as a vector, search it later. One store shared across all your AI tools: Claude Code, Cursor, Windsurf, and any MCP client.
 
 Not a markdown file — structured decisions with semantic search, exposed over MCP.
 
