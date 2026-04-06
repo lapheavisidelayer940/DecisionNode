@@ -1,19 +1,23 @@
-# DecisionNode — Full Documentation
+# DecisionNode
 
-> Structured, queryable memory for development decisions. Stores architectural choices as vector embeddings, exposes them to AI agents via MCP.
-
-DecisionNode stores decisions as scoped JSON objects, embeds them as vectors using Gemini, and retrieves them via cosine similarity search. The AI calls `search_decisions` through MCP when it needs context — decisions are not injected into a system prompt.
+> Record a decision, embed it as a vector, search it later. Works from the CLI or through your AI via MCP.
 
 ---
 
-## Two interfaces
+## Overview
 
-DecisionNode has two interfaces that share the same data store (`~/.decisionnode/`):
+DecisionNode stores development decisions as structured JSON objects, embeds them as vectors using Gemini, and retrieves them via cosine similarity search. The AI calls `search_decisions` through MCP when it needs context — decisions are not injected into a system prompt.
 
-- **CLI (`decide` or `decisionnode`) — for you.** Setup, add decisions, search, export/import, check embedding health, configure settings. Supports interactive prompts or one-command inline flags.
-- **MCP server (`decide-mcp`) — for your AI.** The AI calls tools like `search_decisions` and `add_decision` over MCP with structured JSON input/output. You connect it to your AI client once (e.g. `claude mcp add decisionnode -s user decide-mcp` for Claude Code). Works with Claude Code, Cursor, Windsurf, Antigravity, or any MCP-compliant client.
+The same decision store is accessible from any MCP-compatible tool (Claude Code, Cursor, Windsurf, Antigravity, etc.).
 
-The CLI handles setup and maintenance (init, setup, embed, clean, export, import, config). The MCP server handles the AI's workflow (search, add, update, delete) with automatic conflict detection.
+### Two Interfaces
+
+| Interface | For | How |
+|-----------|-----|-----|
+| **CLI** (`decide` / `decisionnode`) | You | Terminal commands, interactive prompts or inline flags |
+| **MCP Server** (`decide-mcp`) | Your AI | Structured JSON over MCP, launched automatically by AI clients |
+
+Both read and write to the same local store at `~/.decisionnode/`.
 
 ---
 
@@ -23,16 +27,19 @@ The CLI handles setup and maintenance (init, setup, embed, clean, export, import
 npm install -g decisionnode
 ```
 
-Installs three executables:
-- `decide` — the CLI (short alias)
-- `decisionnode` — the CLI (full name, same thing)
-- `decide-mcp` — the MCP server (launched by AI clients, not run directly)
+This installs three executables:
+
+| Command | Purpose |
+|---------|---------|
+| `decide` | CLI (short alias) |
+| `decisionnode` | CLI (full name, same thing) |
+| `decide-mcp` | MCP server (launched by AI clients, not run directly) |
 
 ---
 
 ## Quickstart
 
-### 1. Initialize
+### Step 1: Initialize
 
 ```bash
 cd your-project
@@ -41,7 +48,7 @@ decide init
 
 Creates `~/.decisionnode/.decisions/<ProjectName>/`.
 
-### 2. Set up your API key
+### Step 2: Set up API key
 
 ```bash
 decide setup
@@ -49,35 +56,80 @@ decide setup
 
 Get a free key from [Google AI Studio](https://aistudio.google.com/) and paste it when prompted. Saved to `~/.decisionnode/.env`.
 
-### 3. Connect your AI
+### Step 3: Connect your AI
 
-For Claude Code (run once, works in every project):
+**Claude Code** (run once, works in every project):
 
 ```bash
 claude mcp add decisionnode -s user decide-mcp
 ```
 
-Restart Claude Code after running this. For Cursor/Windsurf/Antigravity, add `decide-mcp` as the command in their MCP settings. See the MCP Server section below for all clients.
+**Cursor** — edit `~/.cursor/mcp.json`:
 
-### 4. Add a decision
+```json
+{
+  "mcpServers": {
+    "decisionnode": { "command": "decide-mcp", "args": [] }
+  }
+}
+```
+
+**Windsurf** — edit `~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "decisionnode": { "command": "decide-mcp", "args": [] }
+  }
+}
+```
+
+**Antigravity** — edit `~/.gemini/antigravity/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "decisionnode": { "command": "decide-mcp", "args": [] }
+  }
+}
+```
+
+**Claude Desktop** — edit config file:
+- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "decisionnode": { "command": "decide-mcp", "args": [] }
+  }
+}
+```
+
+**Other clients** — use `decide-mcp` with no arguments via stdio transport. Fallback: `npx -y decisionnode start-server`.
+
+### Step 4: Add a decision
 
 ```bash
 decide add
 ```
 
 Prompts for:
-- **Scope** — architectural domain (e.g. UI, Backend, API, Security). Each scope becomes its own JSON file.
-- **Decision** — clear statement of what was decided.
-- **Rationale** (optional) — the reasoning behind the choice.
-- **Constraints** (optional) — specific rules to follow, comma-separated.
 
-Or add in one command:
+| Field | Required | Description |
+|-------|----------|-------------|
+| **Scope** | Yes | Architectural domain (e.g. UI, Backend, API, Security) |
+| **Decision** | Yes | Clear statement of what was decided |
+| **Rationale** | No | The reasoning behind the choice |
+| **Constraints** | No | Specific rules to follow, comma-separated |
+
+One-command alternative:
 
 ```bash
 decide add -s UI -d "Use Tailwind for all styling" -r "Consistent tokens" -c "No arbitrary values"
 ```
 
-### 5. Search
+### Step 5: Search
 
 ```bash
 decide search "how should we style components?"
@@ -85,58 +137,9 @@ decide search "how should we style components?"
 
 ---
 
-## Configuration
+## Decision Structure
 
-### Storage layout
-
-```
-~/.decisionnode/
-  .env                          # Gemini API key
-  config.json                   # Settings (search sensitivity)
-  .decisions/
-    _global/                    # Global decisions (shared across all projects)
-      ui.json
-      vectors.json
-    MyProject/
-      ui.json                   # Decisions scoped to "UI"
-      backend.json              # Decisions scoped to "Backend"
-      vectors.json              # Embedding vectors
-      history/
-        activity.json           # Audit log
-```
-
-### Multiple projects
-
-Each project is identified by its directory name. `decide projects` lists all of them. The MCP server resolves the project automatically from the AI client's working directory.
-
-### Search sensitivity
-
-Changes the tool description the MCP server sends to the AI, controlling how often it calls `search_decisions`:
-
-```bash
-decide config search-sensitivity high    # Search before ANY code change (default)
-decide config search-sensitivity medium  # Search only for significant changes
-```
-
-Restart the MCP server after changing.
-
-### Global decisions
-
-Decisions that apply across all projects:
-
-```bash
-decide add --global -s Security -d "Never commit .env files"
-```
-
-Stored in `~/.decisionnode/.decisions/_global/`. Automatically included in search results for every project. Global IDs use the `global:` prefix (e.g. `global:security-001`). If a project decision conflicts with a global one, the project decision takes priority.
-
----
-
-## Decision Nodes
-
-A Decision Node is a scoped technical choice with rationale and lifecycle.
-
-### Structure
+A decision is a scoped JSON object:
 
 ```json
 {
@@ -155,135 +158,236 @@ A Decision Node is a scoped technical choice with rationale and lifecycle.
 
 ### Fields
 
-- **id** — auto-generated: first 10 lowercase letters of scope + 3-digit number (e.g. `ui-001`, `backend-003`). Global decisions display with `global:` prefix.
-- **scope** — architectural domain. Normalized to title case. Each scope becomes its own JSON file.
-- **decision** — clear, actionable statement. One sentence.
-- **rationale** (optional) — the "why". Prevents the AI from suggesting alternatives that violate your reasoning.
-- **constraints** (optional) — specific rules the AI reads as hard requirements.
-- **status** — `active` (default, appears in search) or `deprecated` (hidden from search, re-activate later).
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Auto-generated: scope prefix + 3-digit number (e.g. `ui-001`, `backend-003`). Global decisions use `global:` prefix. |
+| `scope` | string | Architectural domain, normalized to title case. Each scope = one JSON file. |
+| `decision` | string | Clear, actionable statement. One sentence. |
+| `status` | `"active"` \| `"deprecated"` | Active = appears in search. Deprecated = hidden from search, embedding preserved. |
+| `rationale` | string? | The "why". Helps the AI understand intent behind the decision. |
+| `constraints` | string[]? | Hard requirements the AI should follow. |
+| `createdAt` | ISO 8601 | When the decision was created. |
 
 ### Lifecycle
 
-- **active** — in effect. Appears in search results.
-- **deprecated** — hidden from search, invisible to AI. A softer alternative to deleting — the embedding is preserved, so re-activating with `decide activate` is instant.
+| Status | Searchable | Embedding | How to change |
+|--------|-----------|-----------|---------------|
+| `active` | Yes | Preserved | Default state |
+| `deprecated` | No | Preserved | `decide deprecate <id>` or `update_decision(status="deprecated")` |
+| (deleted) | N/A | Removed | `decide delete <id>` or `delete_decision(id)` |
 
-```bash
-decide deprecate ui-001   # hide from search
-decide activate ui-001    # bring it back
-```
-
-Status can also be changed via MCP `update_decision(status="deprecated")`.
+Re-activate a deprecated decision: `decide activate <id>` — immediately searchable again.
 
 ---
 
 ## Context Engine
 
-### How it works
+### How Embedding Works
 
-1. **Embedding** — decision text is converted to a vector using Gemini's `gemini-embedding-001`. The text embedded is: `{scope}: {decision}. {rationale} {constraints}`
-2. **Storage** — vectors stored in `vectors.json` as `{ "ui-001": { "vector": [...], "embeddedAt": "..." } }`. Global vectors stored separately in `_global/vectors.json`.
-3. **Retrieval** — query is embedded, compared against stored vectors via cosine similarity. Only active decisions are searched. Deprecated decisions are skipped but their embeddings are preserved.
+1. **Text generation** — the embedded text is: `{scope}: {decision}. {rationale} {constraints}`
+2. **Embedding model** — Gemini `gemini-embedding-001` (768 dimensions)
+3. **Storage** — vectors cached in `vectors.json` per project:
+   ```json
+   { "ui-001": { "vector": [0.12, -0.45, ...], "embeddedAt": "2024-..." } }
+   ```
+4. **Global vectors** — stored separately in `~/.decisionnode/.decisions/_global/vectors.json`
 
-### Conflict detection
+### How Search Works
 
-When adding a decision (CLI or MCP), existing decisions are checked at a 75% similarity threshold.
+1. Query text is embedded using the same model
+2. Cosine similarity is computed against every stored vector
+3. Results below the **search threshold** (default `0.3`) are filtered out
+4. Remaining results are sorted by score (highest first) and returned up to the limit
+
+Only `active` decisions are searched. Deprecated decisions are skipped. Global decisions are always included alongside project decisions.
+
+### Conflict Detection
+
+When adding a decision (CLI or MCP), existing decisions are checked at **75% similarity**:
 
 - **CLI** — shows similar decisions, asks "Continue anyway?"
-- **MCP** — returns the similar decisions without adding. The AI can then update the existing one, deprecate it, or re-call `add_decision` with `force=true`.
+- **MCP** — returns the similar decisions without adding. The AI can update the existing one, deprecate it, or re-call `add_decision(force=true)`.
 
 If the API key is missing, conflict detection is silently skipped.
 
-### Why local?
+---
 
-- Fast retrieval (milliseconds, no network round-trips for search)
-- Private (decisions stay on your machine, only embedding API calls are external)
-- No infrastructure (no vector database, just a JSON file)
+## Configuration
+
+### Storage Layout
+
+```
+~/.decisionnode/
+  .env                          # Gemini API key
+  config.json                   # Settings (agent behavior, threshold)
+  .decisions/
+    _global/                    # Global decisions (all projects)
+      ui.json
+      vectors.json
+    MyProject/
+      ui.json                   # Scope: "UI"
+      backend.json              # Scope: "Backend"
+      vectors.json              # Embedding cache
+      history/
+        activity.json           # Audit log
+```
+
+### Config Options
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `agentBehavior` | `"strict"` \| `"relaxed"` | `"strict"` | Changes the `search_decisions` tool description. Strict makes searching mandatory, relaxed leaves it to the AI's judgment. Requires MCP restart. |
+| `searchThreshold` | `0.0–1.0` | `0.3` | Minimum similarity score for search results. Applies immediately. |
+
+```bash
+decide config                              # View all settings
+decide config agent-behavior strict        # AI must search before any code change
+decide config agent-behavior relaxed      # AI searches when it thinks it's relevant
+decide config search-threshold 0.5         # Only 50%+ similarity results
+decide config search-threshold 0.2         # More permissive results
+```
+
+### Global Decisions
+
+Decisions that apply across all projects:
+
+```bash
+decide add --global -s Security -d "Never commit .env files"
+```
+
+Stored in `~/.decisionnode/.decisions/_global/`. Included in every project's search results. IDs use `global:` prefix (e.g. `global:security-001`).
+
+### Multiple Projects
+
+Each project is identified by its directory name. The MCP server resolves the project automatically from the AI client's working directory.
+
+```bash
+decide projects    # List all projects
+```
 
 ---
 
 ## CLI Reference
 
-All commands work with both `decide` and `decisionnode` — they're the same command.
+All commands work with both `decide` and `decisionnode`.
 
 ### Core Commands
 
-- `decide init` — initialize project store
-- `decide setup` — configure Gemini API key interactively
-- `decide add` — add a decision interactively
-- `decide add -s <scope> -d <decision> [-r <rationale>] [-c <constraints>]` — add in one command
-- `decide add --global` — add a global decision (works with both modes)
-- `decide list [--scope <scope>]` — list all decisions (includes global)
-- `decide list --global` — list only global decisions
-- `decide get <id>` — view full details (supports `global:` prefix)
-- `decide search "<query>"` — semantic search, only active decisions, includes global
-- `decide edit <id>` — edit text, rationale, constraints (supports `global:` prefix)
-- `decide deprecate <id>` — hide from search, keep decision and embedding
-- `decide activate <id>` — re-activate, immediately searchable
-- `decide delete <id>` — permanently delete decision and embedding
-- `decide delete-scope <scope>` — delete entire scope
+| Command | Description |
+|---------|-------------|
+| `decide init` | Initialize project store |
+| `decide setup` | Configure Gemini API key |
+| `decide add` | Add a decision (interactive) |
+| `decide add -s <scope> -d <text> [-r <rationale>] [-c <constraints>]` | Add a decision (one command) |
+| `decide add --global` | Add a global decision |
+| `decide list [--scope <scope>]` | List all decisions (includes global) |
+| `decide list --global` | List only global decisions |
+| `decide get <id>` | View full details (supports `global:` prefix) |
+| `decide search "<query>"` | Semantic search (active only, includes global) |
+| `decide edit <id>` | Edit decision fields (supports `global:` prefix) |
+| `decide deprecate <id>` | Hide from search, keep embedding |
+| `decide activate <id>` | Re-activate, immediately searchable |
+| `decide delete <id>` | Permanently delete decision + embedding |
+| `decide delete-scope <scope>` | Delete entire scope |
 
 ### Data & Maintenance
 
-- `decide export [format]` — prints to terminal, save with `> ~/file.json`. Formats: md (default), json, csv
-- `decide export --global` — export global decisions
-- `decide import <file> [--overwrite]` — import from JSON file (e.g. `decide import ~/decisions.json`)
-- `decide import <file> --global` — import into global store
-- `decide check` — show which decisions are missing embeddings
-- `decide embed` — generate embeddings for unembedded decisions
-- `decide clean` — remove orphaned vectors
-- `decide history [--filter <source>]` — view activity log
-- `decide projects` — list all projects (shows global separately)
-- `decide config` — view/set search-sensitivity
+| Command | Description |
+|---------|-------------|
+| `decide export [format]` | Export to terminal. Formats: `md` (default), `json`, `csv` |
+| `decide export --global` | Export global decisions |
+| `decide import <file> [--overwrite]` | Import from JSON file |
+| `decide import <file> --global` | Import into global store |
+| `decide check` | Show decisions missing embeddings |
+| `decide embed` | Generate embeddings for unembedded decisions |
+| `decide clean` | Remove orphaned vectors |
+| `decide history [--filter <source>]` | View activity log. Shows which tool made each change (e.g. `cli`, `claude-code`, `cursor`). Filter: `cli`, `mcp`, `cloud` |
+| `decide projects` | List all projects |
+| `decide config` | View/set configuration |
 
 ---
 
-## MCP Server
+## MCP Tools (9)
 
-### Setup
+These tools are available to any connected AI agent.
 
-For Claude Code, run once: `claude mcp add decisionnode -s user decide-mcp`, then restart Claude Code.
+### search_decisions
 
-For Cursor/Windsurf, use `decide-mcp` with no arguments in their MCP settings panel.
-
-For Claude Desktop, add manually to its config file:
-
-```json
-{
-  "mcpServers": {
-    "decisionnode": {
-      "command": "npx",
-      "args": ["-y", "decisionnode", "start-server"]
-    }
-  }
-}
+```
+search_decisions(query: string, limit?: number, project?: string)
 ```
 
-For other clients, use `decide-mcp` with no arguments in their MCP settings.
+Semantic search across active decisions. Includes global decisions. Returns matches with similarity scores. Results below the configured threshold are filtered out.
 
-### Tools (9)
+### list_decisions
 
-1. **search_decisions(query, limit?, project)** — semantic search across active decisions. Includes global. Returns matches with similarity scores.
-2. **list_decisions(scope?, project)** — list all decisions including global.
-3. **get_decision(id, project)** — full details by ID. Supports `global:` prefix.
-4. **add_decision(scope, decision, rationale, constraints, global?, force?, project)** — add a decision. If similar exist (75%), returns them instead. Re-call with `force=true` to override. `global=true` for cross-project.
-5. **update_decision(id, decision?, rationale?, status?, constraints?, project)** — update content or status. Supports `global:` prefix.
-6. **delete_decision(id, project)** — permanently delete. Supports `global:` prefix.
-7. **get_history(limit?, project)** — activity log.
-8. **get_status(project)** — project overview: counts, last activity.
-9. **list_projects(verbose?)** — all projects + global count.
+```
+list_decisions(scope?: string, project?: string)
+```
 
-### Search Sensitivity
+List all decisions for a project, including global. Optionally filter by scope.
 
-Changes the `search_decisions` tool description sent to the AI:
+### get_decision
 
-- **high** (default) — tool description says searching is mandatory before any code change.
-- **medium** — tool description says search only for significant changes.
+```
+get_decision(id: string, project?: string)
+```
+
+Get full details by ID. Supports `global:` prefix (e.g. `global:ui-001`).
+
+### add_decision
+
+```
+add_decision(scope: string, decision: string, rationale?: string, constraints?: string[], global?: boolean, force?: boolean, project?: string)
+```
+
+Record a new decision. If similar decisions exist (75% similarity), returns them instead of adding. Re-call with `force=true` to override. Set `global=true` for cross-project decisions.
+
+### update_decision
+
+```
+update_decision(id: string, decision?: string, rationale?: string, status?: string, constraints?: string[], project?: string)
+```
+
+Update an existing decision. Supports `global:` prefix. Set `status` to `"deprecated"` or `"active"`.
+
+### delete_decision
+
+```
+delete_decision(id: string, project?: string)
+```
+
+Permanently delete a decision and its embedding. Supports `global:` prefix.
+
+### get_history
+
+```
+get_history(limit?: number, project?: string)
+```
+
+Activity log of recent changes (adds, edits, deletes). Each entry shows the source — `cli` for terminal commands, or the MCP client name (e.g. `claude-code`, `cursor`, `windsurf`) for AI-initiated changes.
+
+### get_status
+
+```
+get_status(project?: string)
+```
+
+Project overview: total decisions, active count, last activity.
+
+### list_projects
+
+```
+list_projects(verbose?: boolean)
+```
+
+All projects with decision counts, plus global count.
 
 ---
 
 ## Links
 
-- GitHub: https://github.com/decisionnode/decisionnode
-- Website: https://decisionnode.dev
-- License: MIT
-- MCP Protocol: https://modelcontextprotocol.io
+- **GitHub**: https://github.com/decisionnode/decisionnode
+- **Website**: https://decisionnode.dev
+- **License**: MIT
+- **MCP Protocol**: https://modelcontextprotocol.io

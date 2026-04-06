@@ -81,10 +81,76 @@ export default function DocsLayout() {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [setIsOpen]);
 
+    function htmlToMarkdown(el: HTMLElement): string {
+        let md = '';
+        for (const node of el.childNodes) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                md += node.textContent || '';
+                continue;
+            }
+            if (node.nodeType !== Node.ELEMENT_NODE) continue;
+            const tag = (node as HTMLElement).tagName.toLowerCase();
+            const child = node as HTMLElement;
+
+            if (tag === 'h1') { md += `\n# ${child.textContent?.trim()}\n\n`; }
+            else if (tag === 'h2') { md += `\n## ${child.textContent?.trim()}\n\n`; }
+            else if (tag === 'h3') { md += `\n### ${child.textContent?.trim()}\n\n`; }
+            else if (tag === 'h4') { md += `\n#### ${child.textContent?.trim()}\n\n`; }
+            else if (tag === 'pre') {
+                const code = child.querySelector('code');
+                const lang = code?.className?.match(/language-(\w+)/)?.[1] || '';
+                md += `\n\`\`\`${lang}\n${child.textContent?.trim()}\n\`\`\`\n\n`;
+            }
+            else if (tag === 'code') { md += `\`${child.textContent}\``; }
+            else if (tag === 'strong' || tag === 'b') { md += `**${child.textContent}**`; }
+            else if (tag === 'em' || tag === 'i') { md += `*${child.textContent}*`; }
+            else if (tag === 'ul') {
+                for (const li of child.querySelectorAll(':scope > li')) {
+                    md += `- ${htmlToMarkdown(li as HTMLElement).trim()}\n`;
+                }
+                md += '\n';
+            }
+            else if (tag === 'ol') {
+                let i = 1;
+                for (const li of child.querySelectorAll(':scope > li')) {
+                    md += `${i}. ${htmlToMarkdown(li as HTMLElement).trim()}\n`;
+                    i++;
+                }
+                md += '\n';
+            }
+            else if (tag === 'a') {
+                const href = child.getAttribute('href') || '';
+                md += `[${child.textContent}](${href})`;
+            }
+            else if (tag === 'p') { md += `${htmlToMarkdown(child).trim()}\n\n`; }
+            else if (tag === 'br') { md += '\n'; }
+            else if (tag === 'hr') { md += '\n---\n\n'; }
+            else if (tag === 'table') {
+                const rows = child.querySelectorAll('tr');
+                rows.forEach((row, ri) => {
+                    const cells = row.querySelectorAll('th, td');
+                    const line = Array.from(cells).map(c => (c as HTMLElement).textContent?.trim() || '').join(' | ');
+                    md += `| ${line} |\n`;
+                    if (ri === 0) {
+                        md += `| ${Array.from(cells).map(() => '---').join(' | ')} |\n`;
+                    }
+                });
+                md += '\n';
+            }
+            else if (tag === 'div' || tag === 'section' || tag === 'nav' || tag === 'li' || tag === 'span' || tag === 'main') {
+                md += htmlToMarkdown(child);
+            }
+            else { md += htmlToMarkdown(child); }
+        }
+        return md;
+    }
+
     function copyPageForAI() {
         if (!contentRef.current) return;
-        const text = contentRef.current.innerText;
-        navigator.clipboard.writeText(text);
+        const md = htmlToMarkdown(contentRef.current)
+            .replace(/\n{3,}/g, '\n\n')
+            .trim();
+        navigator.clipboard.writeText(md);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     }

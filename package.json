@@ -1,7 +1,7 @@
 {
   "name": "decisionnode",
-  "version": "0.4.0",
-  "description": "Store development decisions as vector embeddings, query them via semantic search. CLI + MCP server for AI agents.",
+  "version": "0.5.0",
+  "description": "Record a decision, embed it as a vector, search it later. CLI + MCP server for AI tools.",
   "keywords": [
     "decisions",
     "mcp",

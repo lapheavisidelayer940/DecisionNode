@@ -9,7 +9,7 @@ const HISTORY_DIR = 'history';
 const LOG_FILE = path.join(HISTORY_DIR, 'activity.json');
 
 export type ActionType = 'added' | 'updated' | 'deleted' | 'imported' | 'installed' | 'cloud_push' | 'cloud_pull' | 'conflict_resolved';
-export type SourceType = 'cli' | 'mcp' | 'cloud' | 'marketplace';
+export type SourceType = 'cli' | 'mcp' | 'cloud' | 'marketplace' | `mcp:${string}`;
 
 export interface ActivityLogEntry {
     id: string;

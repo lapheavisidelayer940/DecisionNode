@@ -25,7 +25,7 @@ const DOC_CONTENT: { title: string; path: string; keywords: string }[] = [
     {
         title: 'Configuration',
         path: '/docs/setup',
-        keywords: 'configuration storage layout env gemini api key config.json vectors.json history activity multiple projects search sensitivity high medium'
+        keywords: 'configuration storage layout env gemini api key config.json vectors.json history activity multiple projects agent behavior strict relaxed threshold'
     },
     {
         title: 'Decision Nodes',
@@ -50,7 +50,7 @@ const DOC_CONTENT: { title: string; path: string; keywords: string }[] = [
     {
         title: 'MCP Server',
         path: '/docs/mcp',
-        keywords: 'mcp server model context protocol setup .mcp.json claude code cursor windsurf antigravity tools search_decisions list_decisions get_decision add_decision update_decision delete_decision get_history get_status list_projects search sensitivity force conflict'
+        keywords: 'mcp server model context protocol setup .mcp.json claude code cursor windsurf antigravity tools search_decisions list_decisions get_decision add_decision update_decision delete_decision get_history get_status list_projects agent behavior strict relaxed force conflict'
     },
 ];
 

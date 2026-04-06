@@ -176,7 +176,7 @@ export async function addGlobalDecision(decision: DecisionNode, source: SourceTy
 /**
  * Update an existing global decision
  */
-export async function updateGlobalDecision(id: string, updates: Partial<DecisionNode>): Promise<DecisionNode | null> {
+export async function updateGlobalDecision(id: string, updates: Partial<DecisionNode>, source: SourceType = 'cli'): Promise<DecisionNode | null> {
     const rawId = stripGlobalPrefix(id);
     const scopes = await getGlobalScopes();
 
@@ -195,7 +195,10 @@ export async function updateGlobalDecision(id: string, updates: Partial<Decision
             await saveGlobalDecisions(collection);
 
             embedGlobalDecision(updated).catch(() => { });
-            await logAction('updated', `global:${rawId}`, `Updated global decision global:${rawId}`);
+            const desc = updates.status === 'deprecated' ? `Deprecated global:${rawId}`
+                : updates.status === 'active' ? `Activated global:${rawId}`
+                : `Updated global decision global:${rawId}`;
+            await logAction('updated', `global:${rawId}`, desc, source);
 
             return { ...updated, id: `global:${rawId}` };
         }
@@ -207,7 +210,7 @@ export async function updateGlobalDecision(id: string, updates: Partial<Decision
 /**
  * Delete a global decision
  */
-export async function deleteGlobalDecision(id: string): Promise<boolean> {
+export async function deleteGlobalDecision(id: string, source: SourceType = 'cli'): Promise<boolean> {
     const rawId = stripGlobalPrefix(id);
     const scopes = await getGlobalScopes();
 
@@ -228,7 +231,7 @@ export async function deleteGlobalDecision(id: string): Promise<boolean> {
             }
 
             clearGlobalEmbedding(rawId).catch(() => { });
-            await logAction('deleted', `global:${rawId}`, `Deleted global decision global:${rawId}`);
+            await logAction('deleted', `global:${rawId}`, `Deleted global decision global:${rawId}`, source);
 
             return true;
         }
@@ -430,7 +433,7 @@ export async function addDecision(decision: DecisionNode, source: SourceType = '
  * Update an existing decision
  * Auto-embeds and logs the action
  */
-export async function updateDecision(id: string, updates: Partial<DecisionNode>): Promise<DecisionNode | null> {
+export async function updateDecision(id: string, updates: Partial<DecisionNode>, source: SourceType = 'cli'): Promise<DecisionNode | null> {
     const scopes = await getAvailableScopes();
 
     for (const scope of scopes) {
@@ -456,7 +459,10 @@ export async function updateDecision(id: string, updates: Partial<DecisionNode>)
             });
 
             // Log the action
-            await logAction('updated', id, `Updated ${id}`);
+            const desc = updates.status === 'deprecated' ? `Deprecated ${id}`
+                : updates.status === 'active' ? `Activated ${id}`
+                : `Updated ${id}`;
+            await logAction('updated', id, desc, source);
 
             return updated;
         }
@@ -469,7 +475,7 @@ export async function updateDecision(id: string, updates: Partial<DecisionNode>)
  * Delete a decision by ID
  * Clears embedding and logs the action
  */
-export async function deleteDecision(id: string): Promise<boolean> {
+export async function deleteDecision(id: string, source: SourceType = 'cli'): Promise<boolean> {
     const scopes = await getAvailableScopes();
 
     for (const scope of scopes) {
@@ -501,7 +507,7 @@ export async function deleteDecision(id: string): Promise<boolean> {
             });
 
             // Log the action
-            await logAction('deleted', id, `Deleted ${id}`);
+            await logAction('deleted', id, `Deleted ${id}`, source);
 
             return true;
         }

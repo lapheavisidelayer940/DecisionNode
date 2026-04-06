@@ -5,8 +5,8 @@
 <h1 align="center">DecisionNode</h1>
 
 <p align="center">
-  Structured, queryable memory for development decisions.<br/>
-  Stores architectural choices as vector embeddings, exposes them to AI agents via MCP.
+  Record a decision, embed it as a vector, search it later.<br/>
+  Works from the CLI or through your AI via MCP.
 </p>
 
 <p align="center">
@@ -18,12 +18,12 @@
 ---
 
 <p align="center">
-  <img src="website/public/demo.gif" alt="DecisionNode Demo" width="800" />
+  <img src="website/public/recordings/demo.gif" alt="DecisionNode Demo" width="800" />
 </p>
 
-Your AI keeps forgetting what you agreed on. You say "use Tailwind, no CSS modules" — next session, it writes CSS modules. DecisionNode stores these decisions as vector embeddings so the AI can search them before writing code.
+Record a decision, embed it as a vector, search it later. Works from the CLI or through your AI via MCP. Same store, every tool.
 
-Not a markdown file. A queryable memory layer with semantic search.
+Not a markdown file — structured decisions with semantic search, exposed over MCP.
 
 ## Install
 
@@ -70,6 +70,31 @@ decide embed                        # fix missing embeddings
 decide export json > decisions.json # export to file
 ```
 
+## Features in action
+
+### History tracking
+Every change is logged with the source — `cli` for terminal, or the MCP client name (`claude-code`, `cursor`, etc.).
+
+<img src="website/public/recordings/history.gif" alt="decide history" width="700" />
+
+### Conflict detection
+<img src="website/public/recordings/conflict.gif" alt="conflict detection" width="700" />
+
+### Deprecate / Activate
+<img src="website/public/recordings/deprecate.gif" alt="deprecate and activate" width="700" />
+
+### Global decisions
+<img src="website/public/recordings/global.gif" alt="global decisions in search" width="700" />
+
+### Agent behavior
+<img src="website/public/recordings/behavior.gif" alt="agent behavior strict vs relaxed" width="700" />
+
+### Configurable threshold
+<img src="website/public/recordings/threshold.gif" alt="configurable search threshold" width="700" />
+
+### Embedding health
+<img src="website/public/recordings/embed.gif" alt="decide check and decide embed" width="700" />
+
 ## Documentation
 
 Full docs at [decisionnode.dev/docs](https://decisionnode.dev/docs)
@@ -79,16 +104,14 @@ Full docs at [decisionnode.dev/docs](https://decisionnode.dev/docs)
 - [MCP Server](https://decisionnode.dev/docs/mcp) — 9 tools, setup for Claude/Cursor/Windsurf
 - [Decision Nodes](https://decisionnode.dev/docs/decisions) — structure, fields, lifecycle
 - [Context Engine](https://decisionnode.dev/docs/context) — embedding, search, conflict detection
-- [Configuration](https://decisionnode.dev/docs/setup) — storage, search sensitivity, global decisions
+- [Configuration](https://decisionnode.dev/docs/setup) — storage, agent behavior, search threshold, global decisions
 - [Workflows](https://decisionnode.dev/docs/workflows) — common patterns
 
 For LLM consumption: [decisionnode.dev/decisionnode-docs.md](https://decisionnode.dev/decisionnode-docs.md)
 
 ## Contributing
 
-The CLI and MCP server are just the start. There's a VS Code extension, a marketplace for shared decision packs, and cloud sync being worked on — contributions to any of these are welcome.
-
-Whether it's a bug fix, a new feature, improving the docs, or just starring the repo — all help is appreciated. See [CONTRIBUTING.md](./CONTRIBUTING.md) for how to get started.
+See [ROADMAP.md](./ROADMAP.md) for what's coming next. Bug fixes, features, docs improvements, or just ideas are all welcome. See [CONTRIBUTING.md](./CONTRIBUTING.md) for how to get started.
 
 ## License
 

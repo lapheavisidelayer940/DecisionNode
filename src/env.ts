@@ -106,18 +106,20 @@ dotenv.config({
 });
 
 // ============================================
-// Search Sensitivity Configuration
+// Configuration
 // ============================================
-export type SearchSensitivity = 'high' | 'medium';
+export type AgentBehavior = 'strict' | 'relaxed';
 
 interface DecisionNodeConfig {
-    searchSensitivity: SearchSensitivity;
+    agentBehavior: AgentBehavior;
+    searchThreshold: number;
 }
 
 const CONFIG_FILE_PATH = path.join(homeDir, '.decisionnode', 'config.json');
 
 const DEFAULT_CONFIG: DecisionNodeConfig = {
-    searchSensitivity: 'high'
+    agentBehavior: 'strict',
+    searchThreshold: 0.3
 };
 
 /**
@@ -151,17 +153,36 @@ function saveConfig(config: DecisionNodeConfig): void {
 }
 
 /**
- * Get the current search sensitivity level
+ * Get the current agent behavior setting
  */
-export function getSearchSensitivity(): SearchSensitivity {
-    return loadConfig().searchSensitivity;
+export function getAgentBehavior(): AgentBehavior {
+    return loadConfig().agentBehavior;
 }
 
 /**
- * Set the search sensitivity level
+ * Set the agent behavior
  */
-export function setSearchSensitivity(level: SearchSensitivity): void {
+export function setAgentBehavior(behavior: AgentBehavior): void {
     const config = loadConfig();
-    config.searchSensitivity = level;
+    config.agentBehavior = behavior;
+    saveConfig(config);
+}
+
+/**
+ * Get the current search threshold (minimum similarity score for results)
+ */
+export function getSearchThreshold(): number {
+    return loadConfig().searchThreshold;
+}
+
+/**
+ * Set the search threshold (0.0–1.0)
+ */
+export function setSearchThreshold(threshold: number): void {
+    if (threshold < 0 || threshold > 1) {
+        throw new Error('Search threshold must be between 0.0 and 1.0');
+    }
+    const config = loadConfig();
+    config.searchThreshold = threshold;
     saveConfig(config);
 }

@@ -352,6 +352,6 @@ export type PackPurchase = Database['public']['Tables']['pack_purchases']['Row']
 export type UserDecision = Database['public']['Tables']['user_decisions']['Row'];
 
 // Constants
-export const FREE_TIER_WEEKLY_EMBEDDING_LIMIT = 3;
+export const FREE_TIER_WEEKLY_EMBEDDING_LIMIT = 20;
 export const PLATFORM_FEE_PERCENTAGE = 0.10; // 10%
 

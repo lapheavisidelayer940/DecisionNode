@@ -3,7 +3,7 @@ import path from 'path';
 import { DecisionNode } from '../types.js';
 import { listDecisions, listGlobalDecisions } from '../store.js';
 import { getEmbedding } from './gemini.js';
-import { getProjectRoot, ensureProjectFolder, getGlobalDecisionsPath, ensureGlobalFolder } from '../env.js';
+import { getProjectRoot, ensureProjectFolder, getGlobalDecisionsPath, ensureGlobalFolder, getSearchThreshold } from '../env.js';
 
 // getProjectRoot() returns ~/.decisionnode/.decisions/{projectname}/
 const VECTORS_FILE = () => path.join(getProjectRoot(), 'vectors.json');
@@ -226,8 +226,10 @@ export async function findRelevantDecisions(query: string, limit: number = 3): P
         }
     }
 
+    const threshold = getSearchThreshold();
     return scores
         .sort((a, b) => b.score - a.score)
+        .filter(s => s.score >= threshold)
         .slice(0, limit);
 }
 

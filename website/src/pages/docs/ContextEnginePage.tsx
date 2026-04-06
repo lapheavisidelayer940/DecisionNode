@@ -38,7 +38,7 @@ export default function ContextEnginePage() {
                     </ListItem>
                     <ListItem title="3. Retrieval">
                         <span className="flex items-center gap-2 mb-2"><Zap className="w-4 h-4 text-purple-400" /> <strong>Cosine similarity search</strong></span>
-                        <p>When you or your AI searches, the query text is embedded using the same model, then compared against every stored vector using cosine similarity. The closest matches are returned ranked by score. Only <Link to="/docs/decisions#lifecycle" className="text-primary-400 hover:underline">active</Link> decisions are searched — <Link to="/docs/decisions#lifecycle" className="text-primary-400 hover:underline">deprecated</Link> decisions are skipped, but their embeddings are kept so re-activating is instant. <Link to="/docs/cli#core-commands" className="text-primary-400 hover:underline">Deleting</Link> a decision removes both the decision and its embedding permanently.</p>
+                        <p>When you or your AI searches, the query text is embedded using the same model, then compared against every stored vector using cosine similarity. Results below the <Link to="/docs/setup#search-threshold" className="text-primary-400 hover:underline">configured threshold</Link> (default 0.3) are filtered out, and the remaining matches are returned ranked by score. Only <Link to="/docs/decisions#lifecycle" className="text-primary-400 hover:underline">active</Link> decisions are searched — <Link to="/docs/decisions#lifecycle" className="text-primary-400 hover:underline">deprecated</Link> decisions are skipped, but their embeddings are kept so re-activating is instant. <Link to="/docs/cli#core-commands" className="text-primary-400 hover:underline">Deleting</Link> a decision removes both the decision and its embedding permanently.</p>
                         <p className="mt-2 text-sm"><Link to="/docs/cli#global-decisions" className="text-primary-400 hover:underline">Global decisions</Link> are included in every search alongside project decisions.</p>
                     </ListItem>
                 </div>
@@ -74,6 +74,12 @@ export default function ContextEnginePage() {
                 <p className="text-zinc-400 mt-4 text-sm">
                     If your API key isn't configured, the conflict check is silently skipped and the decision is added directly.
                 </p>
+
+                <div className="mt-6 rounded-lg overflow-hidden border border-white/10">
+                    <video autoPlay muted loop playsInline className="w-full">
+                        <source src="/recordings/conflict.mp4" type="video/mp4" />
+                    </video>
+                </div>
             </Section>
 
             <Section title="Explicit retrieval" id="explicit-retrieval">

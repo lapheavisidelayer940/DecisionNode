@@ -100,7 +100,7 @@ export default function CliReferencePage() {
         },
         {
             cmd: "decide config",
-            desc: "View current configuration. Use 'decide config search-sensitivity high|medium' to change how aggressively the MCP server prompts AI to search."
+            desc: "View current configuration. Subcommands: 'decide config agent-behavior strict|relaxed' to control how the AI uses DecisionNode, 'decide config search-threshold 0.0-1.0' to set minimum similarity score for results."
         },
     ];
 
@@ -165,6 +165,12 @@ decisionnode add    # same thing`} />
                 <p className="text-zinc-400 mt-2 text-sm">
                     If a project decision conflicts with a global one, the project decision takes priority.
                 </p>
+
+                <div className="mt-6 rounded-lg overflow-hidden border border-white/10">
+                    <video autoPlay muted loop playsInline className="w-full">
+                        <source src="/recordings/global.mp4" type="video/mp4" />
+                    </video>
+                </div>
             </Section>
 
             <Section title="Examples" id="examples">

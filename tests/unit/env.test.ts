@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isGlobalId, stripGlobalPrefix } from '../../src/env.js';
+import { isGlobalId, stripGlobalPrefix, getSearchThreshold, setSearchThreshold } from '../../src/env.js';
 
 describe('isGlobalId', () => {
     it('returns true for global: prefixed IDs', () => {
@@ -30,5 +30,29 @@ describe('stripGlobalPrefix', () => {
 
     it('only strips first occurrence', () => {
         expect(stripGlobalPrefix('global:global:ui-001')).toBe('global:ui-001');
+    });
+});
+
+describe('getSearchThreshold', () => {
+    it('returns a number between 0 and 1', () => {
+        const threshold = getSearchThreshold();
+        expect(threshold).toBeGreaterThanOrEqual(0);
+        expect(threshold).toBeLessThanOrEqual(1);
+    });
+});
+
+describe('setSearchThreshold', () => {
+    it('rejects values below 0', () => {
+        expect(() => setSearchThreshold(-0.1)).toThrow('between 0.0 and 1.0');
+    });
+
+    it('rejects values above 1', () => {
+        expect(() => setSearchThreshold(1.5)).toThrow('between 0.0 and 1.0');
+    });
+
+    it('accepts valid values', () => {
+        expect(() => setSearchThreshold(0.5)).not.toThrow();
+        expect(() => setSearchThreshold(0)).not.toThrow();
+        expect(() => setSearchThreshold(1)).not.toThrow();
     });
 });

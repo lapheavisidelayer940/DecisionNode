@@ -1,14 +1,12 @@
 #!/usr/bin/env node
 // MUST interact with environment before other imports - this import does side-effects (loading .env)
-import { getSearchSensitivity } from '../env.js';
+import { getAgentBehavior } from '../env.js';
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
     CallToolRequestSchema,
     ListToolsRequestSchema,
-    ListResourcesRequestSchema,
-    ReadResourceRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 
 import { findRelevantDecisions, findPotentialConflicts } from '../ai/rag.js';
@@ -22,12 +20,11 @@ import { getProjectRoot, getCurrentProject, setCurrentProject, GLOBAL_STORE, isG
 const server = new Server(
     {
         name: 'decisionnode',
-        version: '0.4.0',
+        version: '0.5.0',
     },
     {
         capabilities: {
             tools: {},
-            resources: {},
         },
     }
 );
@@ -63,18 +60,33 @@ function ensureProject(args: unknown): void {
     }
 }
 
-// Tool descriptions based on search sensitivity level
-const SEARCH_DESCRIPTIONS = {
-    high: `**MANDATORY: Call this FIRST before ANY code changes.** When user asks you to: add a feature, modify code, fix a bug, implement something, refactor, style UI, or make ANY technical choice — you MUST call this tool FIRST to check for existing conventions. Skipping this causes inconsistency and wasted rework. Query with what you're about to work on: "button styling", "error handling", "API design", "authentication", "database schema", "component structure". If no decisions exist, proceed freely; if decisions exist, FOLLOW them.`,
+/**
+ * Get the MCP source string for history logging, e.g. "mcp:claude-code"
+ */
+function getMcpSource(): `mcp:${string}` | 'mcp' {
+    try {
+        const client = server.getClientVersion();
+        if (client?.name) {
+            return `mcp:${client.name}`;
+        }
+    } catch {
+        // Client info not available yet
+    }
+    return 'mcp';
+}
 
-    medium: `Check for existing decisions when making significant changes or when unsure about project conventions. Use this tool to understand established patterns before implementing major features, architectural changes, or when working on new areas of the codebase. Query with what you're working on: "styling", "API design", "database". If no decisions exist, proceed with your best judgment.`
+// Tool descriptions based on agent behavior setting
+const SEARCH_DESCRIPTIONS = {
+    strict: `**MANDATORY: Call this FIRST before ANY code changes.** When user asks you to: add a feature, modify code, fix a bug, implement something, refactor, style UI, or make ANY technical choice — you MUST call this tool FIRST to check for existing conventions. Skipping this causes inconsistency and wasted rework. Query with what you're about to work on: "button styling", "error handling", "API design", "authentication", "database schema", "component structure". If no decisions exist, proceed freely; if decisions exist, FOLLOW them.`,
+
+    relaxed: `Check for existing decisions when making significant changes or when unsure about project conventions. Use this tool to understand established patterns before implementing major features, architectural changes, or when working on new areas of the codebase. Query with what you're working on: "styling", "API design", "database". If no decisions exist, proceed with your best judgment.`
 };
 
 // Define available tools with enhanced descriptions for AI auto-discovery
 server.setRequestHandler(ListToolsRequestSchema, async () => {
-    // Get current sensitivity setting
-    const sensitivity = getSearchSensitivity();
-    const searchDescription = SEARCH_DESCRIPTIONS[sensitivity];
+    // Get current agent behavior setting
+    const behavior = getAgentBehavior();
+    const searchDescription = SEARCH_DESCRIPTIONS[behavior];
 
     return {
         tools: [
@@ -279,87 +291,6 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     };
 });
 
-// MCP Resources - Provides AI instructions and context
-const AI_INSTRUCTIONS = `
-# DecisionNode AI Assistant Instructions
-
-You have access to DecisionNode, a decision tracking system. Follow these rules:
-
-## BEFORE Starting Any Work
-**ALWAYS** call \`search_decisions\` FIRST before:
-- Writing any new code
-- Modifying existing code
-- Making design choices
-- Implementing features
-- Refactoring code
-- Choosing libraries or approaches
-
-Query with what you're about to work on (e.g., "button styling", "authentication", "error handling").
-
-## WHEN to Add Decisions
-**IMMEDIATELY** call \`add_decision\` when:
-- User confirms a technical approach
-- A design pattern is established
-- Architectural choices are made
-- Coding standards are discussed
-- Technology decisions happen
-- UI/UX conventions are agreed upon
-
-## Decision Quality Guidelines
-- **Be specific**: "Use 8px spacing between form fields" not "Use consistent spacing"
-- **Include rationale**: WHY matters more than WHAT
-- **Scope appropriately**: UI, Backend, API, Architecture, Database, Security, etc.
-- **Add constraints**: Specific rules that must be followed
-
-## Common Triggers to Watch For
-- "Let's use..." → Search for existing decisions, then possibly add new one
-- "From now on..." → Add decision immediately
-- "We should always..." → Add decision immediately
-- "I prefer..." → Add decision immediately
-- "The standard is..." → Add decision immediately
-- "Never do..." → Add decision as a constraint
-
-## Example Workflow
-1. User asks: "Add a login button to the header"
-2. You: Call \`search_decisions\` with query "button styling" and "header components"
-3. You: Review any existing decisions about buttons, headers, UI patterns
-4. You: Implement following those decisions
-5. If user says "Make all buttons have rounded corners", call \`add_decision\` immediately
-`;
-
-// Define available resources
-server.setRequestHandler(ListResourcesRequestSchema, async () => {
-    return {
-        resources: [
-            {
-                uri: 'decisionnode://instructions',
-                name: 'AI Assistant Instructions',
-                description: 'Guidelines for AI assistants on when and how to use DecisionNode tools. READ THIS FIRST before any coding task.',
-                mimeType: 'text/markdown',
-            },
-        ],
-    };
-});
-
-// Handle resource reads
-server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
-    const { uri } = request.params;
-
-    if (uri === 'decisionnode://instructions') {
-        return {
-            contents: [
-                {
-                    uri,
-                    mimeType: 'text/markdown',
-                    text: AI_INSTRUCTIONS,
-                },
-            ],
-        };
-    }
-
-    throw new Error(`Unknown resource: ${uri}`);
-});
-
 // Handle tool calls
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args } = request.params;
@@ -517,7 +448,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                     createdAt: new Date().toISOString(),
                 };
 
-                const { embedded } = await addGlobalDecision(newDecision, 'mcp');
+                const { embedded } = await addGlobalDecision(newDecision, getMcpSource());
 
                 if (!embedded) {
                     // Roll back — delete the decision that couldn't be embedded
@@ -562,7 +493,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                 createdAt: new Date().toISOString(),
             };
 
-            const { embedded } = await addDecision(newDecision, 'mcp');
+            const { embedded } = await addDecision(newDecision, getMcpSource());
 
             if (!embedded) {
                 // Roll back — delete the decision that couldn't be embedded
@@ -600,8 +531,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             const { id, ...updates } = args as { id: string; decision?: string; rationale?: string; constraints?: string[]; status?: 'active' | 'deprecated' };
 
             const updated = isGlobalId(id)
-                ? await updateGlobalDecision(id, updates)
-                : await updateDecision(id, updates);
+                ? await updateGlobalDecision(id, updates, getMcpSource())
+                : await updateDecision(id, updates, getMcpSource());
 
             if (!updated) {
                 return {
@@ -628,8 +559,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             const { id } = args as { id: string };
 
             const deleted = isGlobalId(id)
-                ? await deleteGlobalDecision(id)
-                : await deleteDecision(id);
+                ? await deleteGlobalDecision(id, getMcpSource())
+                : await deleteDecision(id, getMcpSource());
 
             return {
                 content: [

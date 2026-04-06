@@ -20,44 +20,44 @@ export default function DocsIntroduction() {
             <div className="mb-12">
                 <h1 className="text-4xl font-bold text-white mb-6">Introduction</h1>
                 <p className="text-xl text-zinc-400 leading-relaxed border-l-2 border-primary-500/50 pl-6">
-                    DecisionNode is a structured, queryable memory layer for development decisions. It stores architectural choices as vector embeddings and exposes them to AI agents via MCP.
+                    Record a decision, embed it as a vector, search it later. Works from the CLI or through your AI via MCP. One decision layer for all your AI tools.
                 </p>
             </div>
 
             <Section title="The problem" id="the-problem">
                 <div className="space-y-4 text-zinc-400">
                     <p>
-                        AI coding assistants today have limited memory. Most rely on flat markdown files (<code>CLAUDE.md</code>, <code>CURSORRULES</code>, etc.) that get injected into the system prompt. This approach has clear limitations:
+                        You make decisions while coding with AI — "use Tailwind, not CSS modules", "always return proper HTTP status codes", "use Vitest for testing." These decisions get scattered:
                     </p>
                     <ul className="list-disc list-inside ml-4 space-y-2">
-                        <li><strong className="text-zinc-200">No semantic retrieval</strong> — the entire file is loaded every time, regardless of relevance. A question about button styling loads your database migration rules too.</li>
-                        <li><strong className="text-zinc-200">Doesn't scale</strong> — as decisions grow, the file becomes too large for context windows. You start deleting old decisions to make room.</li>
-                        <li><strong className="text-zinc-200">No structure</strong> — decisions are mixed with setup instructions, code snippets, and notes. There's no way to query, filter, or track the lifecycle of a decision.</li>
-                        <li><strong className="text-zinc-200">No history</strong> — when you edit a markdown file, the previous version is gone. There's no audit trail of what changed or why.</li>
+                        <li><strong className="text-zinc-200">Siloed per tool</strong> — a decision made in Claude Code doesn't exist in Cursor or Windsurf. Each tool has its own memory, if any.</li>
+                        <li><strong className="text-zinc-200">Not semantically searchable</strong> — files like <code>CLAUDE.md</code> or <code>CURSORRULES</code> get loaded into the prompt in full. There's some directory-level scoping, but no semantic retrieval — a question about button styling still pulls in your database migration rules.</li>
+                        <li><strong className="text-zinc-200">Context window pollution</strong> — as decisions grow, the file gets too large. You start deleting old decisions to make room, losing them permanently.</li>
+                        <li><strong className="text-zinc-200">No history</strong> — there's no audit trail. You can't see what decisions were added, changed, or removed — or whether it was you or the AI that did it.</li>
+                        <li><strong className="text-zinc-200">No structure</strong> — decisions are mixed with setup instructions, code snippets, and notes. No way to scope, filter, deprecate, or track lifecycle.</li>
                     </ul>
                 </div>
             </Section>
 
-            <Section title="How DecisionNode solves this" id="how-it-solves-this">
+            <Section title="What DecisionNode does" id="what-it-does">
                 <div className="space-y-4 text-zinc-400">
                     <p>
-                        DecisionNode treats decisions as structured data, not prose. Each decision is a scoped JSON object with fields for rationale, constraints, status, and tags. These get embedded as vector embeddings using Gemini's embedding model, stored locally, and retrieved via cosine similarity search.
+                        DecisionNode stores decisions as structured JSON objects, embeds them as vectors, and exposes them over MCP so any compatible tool can search them. The same decisions are accessible from Claude Code, Cursor, Windsurf, or any other MCP client.
                     </p>
                     <p>
-                        The retrieval is <strong className="text-zinc-200">explicit</strong> — the AI calls <code>search_decisions</code> through MCP when it needs context. Decisions aren't blindly injected into the prompt. The AI gets back only the relevant matches, ranked by similarity score.
+                        Retrieval is <strong className="text-zinc-200">explicit</strong> — the AI calls <code>search_decisions</code> through MCP when it needs context. Only the relevant matches come back, ranked by cosine similarity. Nothing gets injected into the prompt blindly.
                     </p>
 
                     <div className="bg-zinc-900/50 p-6 rounded-lg border border-zinc-800 mt-6">
-                        <p className="text-zinc-300 font-mono text-sm mb-3">Comparison:</p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                             <div>
                                 <p className="text-zinc-500 font-semibold mb-2">Flat markdown files</p>
                                 <ul className="space-y-1 text-zinc-500">
-                                    <li>Full file loaded into every prompt</li>
-                                    <li>String matching or no search at all</li>
-                                    <li>No structure, scoping, or status</li>
-                                    <li>No change history</li>
-                                    <li>Lives in the repo</li>
+                                    <li>Loaded in full — some directory-level scoping, but no semantic retrieval</li>
+                                    <li>No search — or keyword matching at best</li>
+                                    <li>No structure, scoping, or lifecycle</li>
+                                    <li>No change history or audit trail</li>
+                                    <li>Siloed to one tool</li>
                                 </ul>
                             </div>
                             <div>
@@ -65,9 +65,9 @@ export default function DocsIntroduction() {
                                 <ul className="space-y-1 text-zinc-300">
                                     <li>Only relevant decisions retrieved</li>
                                     <li>Semantic vector search (cosine similarity)</li>
-                                    <li>Scoped, structured, with lifecycle tracking</li>
-                                    <li>Full activity history with audit log</li>
-                                    <li>Lives in <code>~/.decisionnode/</code>, repo stays clean</li>
+                                    <li>Scoped, structured, deprecate/activate lifecycle</li>
+                                    <li>Activity history — who changed what, from which tool (e.g. <code>claude-code</code>, <code>cursor</code>)</li>
+                                    <li>Same store across all MCP clients</li>
                                 </ul>
                             </div>
                         </div>

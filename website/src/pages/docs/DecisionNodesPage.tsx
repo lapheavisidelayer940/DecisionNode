@@ -112,6 +112,12 @@ decide activate ui-001`} />
                 <p className="text-zinc-400 mt-4 text-sm">
                     Deprecating is a softer alternative to deleting — the decision is hidden from search and invisible to the AI, but you can bring it back with <code>decide activate</code> if you change your mind. The vector embedding is kept, so re-activating is instant with no need to re-embed. The AI can also deprecate/activate decisions through the MCP <code>update_decision</code> tool when you ask it to.
                 </p>
+
+                <div className="mt-6 rounded-lg overflow-hidden border border-white/10">
+                    <video autoPlay muted loop playsInline className="w-full">
+                        <source src="/recordings/deprecate.mp4" type="video/mp4" />
+                    </video>
+                </div>
             </Section>
         </div>
     );

@@ -2,6 +2,28 @@
 
 All notable changes to DecisionNode are documented here.
 
+## [0.5.0] - 2026-04-06
+
+### Added
+- Configurable search threshold (`decide config search-threshold`, default 0.3)
+- Search results below threshold are now filtered out (CLI + MCP)
+- MCP client name tracking in history — shows `claude-code`, `cursor`, etc. instead of generic "MCP"
+- Conflict detection now works in inline mode (`decide add -s ... -d ...`), not just interactive
+- Agent behavior setting (`decide config agent-behavior strict|relaxed`) — renamed from search-sensitivity
+- Feature recordings (VHS) for history, conflict, deprecate, global, threshold, embed, behavior
+- Colorized history output — action words, decision IDs, and MCP client names in color
+- "Copy page for AI" button outputs proper markdown instead of raw text
+- ROADMAP.md with tiered priorities
+- Accurate MCP setup instructions for Cursor, Windsurf, Antigravity, Claude Desktop
+- Homepage feature grid with embedded terminal recordings
+
+### Changed
+- Repositioned messaging: "Record a decision, embed it as a vector, search it later"
+- Renamed search-sensitivity to agent-behavior (strict/relaxed instead of high/medium)
+- Updated all docs, README, LLM docs, homepage for consistency
+- History log shows Deprecated/Activated instead of generic "Updated"
+- MCP updates and deletes now log with correct source
+
 ## [0.4.0] - 2026-04-06
 
 ### Added
@@ -53,5 +75,5 @@ All notable changes to DecisionNode are documented here.
 - Activity history with audit log
 - Export to JSON, Markdown, CSV
 - Import from JSON with optional overwrite
-- Search sensitivity configuration (high/medium)
+- Agent behavior configuration (strict/relaxed)
 - Per-project storage in `~/.decisionnode/.decisions/`

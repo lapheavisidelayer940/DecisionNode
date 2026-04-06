@@ -14,7 +14,7 @@ export default function QuickstartPage() {
             <div className="mb-12">
                 <h1 className="text-4xl font-bold text-white mb-6">Quickstart Guide</h1>
                 <p className="text-xl text-zinc-400 leading-relaxed border-l-2 border-primary-500/50 pl-6">
-                    Initialize DecisionNode, capture your first decision, and search for it — all in under a minute.
+                    Initialize DecisionNode, record your first decision, and search for it — all in under a minute.
                 </p>
             </div>
 

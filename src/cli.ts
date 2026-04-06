@@ -3,7 +3,7 @@
 import { listDecisions, getDecisionById, addDecision, updateDecision, deleteDecision, deleteScope, getNextDecisionId, renumberDecisions, importDecisions, getAvailableScopes, listProjects, saveDecisions, listGlobalDecisions, getGlobalDecisionById, addGlobalDecision, updateGlobalDecision, deleteGlobalDecision, getNextGlobalDecisionId, getGlobalScopes } from './store.js';
 import { DecisionNode } from './types.js';
 import { getHistory, getSnapshot, getDecisionsFromSnapshot, logBatchAction, logAction, ActivityLogEntry } from './history.js';
-import { getSearchSensitivity, setSearchSensitivity, SearchSensitivity, isGlobalId } from './env.js';
+import { getAgentBehavior, setAgentBehavior, AgentBehavior, isGlobalId, getSearchThreshold, setSearchThreshold } from './env.js';
 import { loginToCloud, logoutFromCloud, getCloudStatus, syncDecisionsToCloud, getCloudSyncStatus, isProSubscriber, refreshCloudProfile, pullDecisionsFromCloud, detectConflicts, resolveConflict, CloudDecision, SyncConflict, updateSyncMetadata, getAutoSyncEnabled, setAutoSyncEnabled, saveIncomingChanges, removeIncomingChanges } from './cloud.js';
 import { getProjectRoot } from './env.js';
 import * as readline from 'readline';
@@ -375,6 +375,30 @@ async function handleAddDecision() {
         decisionText = inlineDecision;
         rationale = getFlag('--rationale') || getFlag('-r') || '';
         constraintsInput = getFlag('--constraints') || getFlag('-c') || '';
+
+        // Conflict check for inline mode too
+        if (!args.includes('--force')) {
+            try {
+                const { findPotentialConflicts } = await import('./ai/rag.js');
+                const conflicts = await findPotentialConflicts(`${scope}: ${decisionText}`, 0.75);
+
+                if (conflicts.length > 0) {
+                    console.log(`\n  ${c.yellow}!${c.reset} ${c.bold}Similar decisions found:${c.reset}\n`);
+                    for (const { decision, score } of conflicts) {
+                        const similarity = Math.round(score * 100);
+                        console.log(`    ${c.yellow}${similarity}%${c.reset}  ${c.cyan}${decision.id}${c.reset}  ${decision.decision.substring(0, 50)}...`);
+                    }
+                    console.log('');
+                    const proceed = await prompt(`  Continue anyway? ${c.dim}(y/N):${c.reset} `);
+                    if (proceed.toLowerCase() !== 'y') {
+                        console.log(`  ${c.dim}Cancelled.${c.reset}\n`);
+                        return;
+                    }
+                }
+            } catch {
+                // Conflict check failed (API key not set) - continue anyway
+            }
+        }
     } else {
         // Interactive mode
         console.log(`\n  ${c.bold}${c.white}New ${isGlobal ? 'Global ' : ''}Decision${c.reset}\n`);
@@ -763,12 +787,14 @@ async function handleHistory() {
     let displayedHistory = history;
     if (filter) {
         const validFilters = ['cloud', 'cli', 'mcp', 'marketplace'];
-        if (!validFilters.includes(filter)) {
+        if (!validFilters.includes(filter) && !filter.startsWith('mcp:')) {
             console.log(`❌ Invalid filter: ${filter}`);
             console.log(`   Valid options: ${validFilters.join(', ')}`);
             return;
         }
-        displayedHistory = history.filter(h => h.source === filter);
+        displayedHistory = history.filter(h =>
+            filter === 'mcp' ? h.source?.startsWith('mcp') : h.source === filter
+        );
     }
 
     if (displayedHistory.length === 0) {
@@ -781,9 +807,13 @@ async function handleHistory() {
     displayedHistory.forEach(entry => {
         const date = new Date(entry.timestamp).toLocaleString();
         const icon = getActionIcon(entry.action);
-        const source = entry.source ? entry.source.toUpperCase() : 'CLI';
+        const rawSource = entry.source || 'cli';
+        const source = rawSource.startsWith('mcp:') ? rawSource.replace('mcp:', '') : rawSource.toUpperCase();
+        const isMcp = rawSource.startsWith('mcp');
+        const sourceBadge = isMcp ? `${c.cyan}${source.padEnd(14)}${c.reset}` : `${c.gray}${source.padEnd(14)}${c.reset}`;
+        const desc = colorizeDescription(entry.description);
 
-        console.log(`  ${icon} ${c.dim}${date}${c.reset}  ${c.gray}${source.padEnd(5)}${c.reset}  ${entry.description}`);
+        console.log(`  ${icon} ${c.dim}${date}${c.reset}  ${sourceBadge}  ${desc}`);
     });
     console.log('');
 }
@@ -800,6 +830,28 @@ function getActionIcon(action: string): string {
         case 'conflict_resolved': return `${c.yellow}⇔${c.reset}`;
         default: return `${c.dim}·${c.reset}`;
     }
+}
+
+function colorizeDescription(desc: string): string {
+    // Colorize action word
+    const actions: Record<string, string> = {
+        'Added': c.green,
+        'Updated': c.yellow,
+        'Deleted': c.red,
+        'Deprecated': c.yellow,
+        'Activated': c.green,
+        'Imported': c.cyan,
+        'Installed': c.cyan,
+    };
+    for (const [word, color] of Object.entries(actions)) {
+        if (desc.startsWith(word)) {
+            const rest = desc.slice(word.length);
+            // Colorize decision IDs in the rest
+            const colored = rest.replace(/((?:global:)?[\w]+-\d+)/g, `${c.cyan}$1${c.reset}`);
+            return `${color}${word}${c.reset}${colored}`;
+        }
+    }
+    return desc;
 }
 
 function getTimeAgo(date: Date): string {
@@ -2013,40 +2065,62 @@ async function handleConfig(): Promise<void> {
     const value = args[2];
 
     if (!subCommand) {
-        const sensitivity = getSearchSensitivity();
+        const behavior = getAgentBehavior();
+        const threshold = getSearchThreshold();
         console.log(`\n  ${c.bold}${c.white}Configuration${c.reset}\n`);
-        console.log(`  ${c.dim}search-sensitivity${c.reset}  ${c.cyan}${sensitivity}${c.reset}`);
+        console.log(`  ${c.dim}agent-behavior${c.reset}      ${c.cyan}${behavior}${c.reset}`);
+        console.log(`  ${c.dim}search-threshold${c.reset}    ${c.cyan}${threshold}${c.reset}`);
         console.log(`\n  ${c.dim}Usage:${c.reset} ${c.cyan}decide config${c.reset} ${c.gray}<option> <value>${c.reset}\n`);
         return;
     }
 
-    if (subCommand === 'search-sensitivity') {
+    if (subCommand === 'agent-behavior') {
         if (!value) {
-            const current = getSearchSensitivity();
-            console.log(`\n  ${c.dim}search-sensitivity:${c.reset} ${c.cyan}${current}${c.reset}`);
-            console.log(`  ${c.dim}Usage:${c.reset} ${c.cyan}decide config search-sensitivity${c.reset} ${c.gray}<high|medium>${c.reset}\n`);
+            const current = getAgentBehavior();
+            console.log(`\n  ${c.dim}agent-behavior:${c.reset} ${c.cyan}${current}${c.reset}`);
+            console.log(`  ${c.dim}Usage:${c.reset} ${c.cyan}decide config agent-behavior${c.reset} ${c.gray}<strict|relaxed>${c.reset}\n`);
             return;
         }
 
-        if (value !== 'high' && value !== 'medium') {
-            console.error(`  ${c.red}✗${c.reset} Invalid value. Use ${c.cyan}high${c.reset} or ${c.cyan}medium${c.reset}\n`);
+        if (value !== 'strict' && value !== 'relaxed') {
+            console.error(`  ${c.red}✗${c.reset} Invalid value. Use ${c.cyan}strict${c.reset} or ${c.cyan}relaxed${c.reset}\n`);
             process.exit(1);
         }
 
-        setSearchSensitivity(value as SearchSensitivity);
-        console.log(`\n  ${c.green}✓${c.reset} Search sensitivity: ${c.cyan}${value}${c.reset}`);
+        setAgentBehavior(value as AgentBehavior);
+        console.log(`\n  ${c.green}✓${c.reset} Agent behavior: ${c.cyan}${value}${c.reset}`);
 
-        if (value === 'high') {
+        if (value === 'strict') {
             console.log(`  ${c.dim}AI must search before any code change${c.reset}`);
         } else {
-            console.log(`  ${c.dim}AI searches for significant changes only${c.reset}`);
+            console.log(`  ${c.dim}AI searches when it thinks it's relevant${c.reset}`);
         }
         console.log(`\n  ${c.dim}Restart your MCP server for changes to take effect.${c.reset}\n`);
         return;
     }
 
+    if (subCommand === 'search-threshold') {
+        if (!value) {
+            const current = getSearchThreshold();
+            console.log(`\n  ${c.dim}search-threshold:${c.reset} ${c.cyan}${current}${c.reset}`);
+            console.log(`  ${c.dim}Usage:${c.reset} ${c.cyan}decide config search-threshold${c.reset} ${c.gray}<0.0-1.0>${c.reset}\n`);
+            return;
+        }
+
+        const num = parseFloat(value);
+        if (isNaN(num) || num < 0 || num > 1) {
+            console.error(`  ${c.red}✗${c.reset} Invalid value. Must be a number between ${c.cyan}0.0${c.reset} and ${c.cyan}1.0${c.reset}\n`);
+            process.exit(1);
+        }
+
+        setSearchThreshold(num);
+        console.log(`\n  ${c.green}✓${c.reset} Search threshold: ${c.cyan}${num}${c.reset}`);
+        console.log(`  ${c.dim}Results below ${(num * 100).toFixed(0)}% similarity will be filtered out${c.reset}\n`);
+        return;
+    }
+
     console.error(`  ${c.red}✗${c.reset} Unknown option: ${subCommand}`);
-    console.log(`  ${c.dim}Available:${c.reset} search-sensitivity\n`);
+    console.log(`  ${c.dim}Available:${c.reset} agent-behavior, search-threshold\n`);
     process.exit(1);
 }
 

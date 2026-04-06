@@ -26,7 +26,7 @@ export default function WorkflowsPage() {
                     <Step title="1. Search before you start">
                         <p>Before working on something, check if there are existing conventions:</p>
                         <CodeBlock code={`decide search "how do we handle error logging?"`} />
-                        <p>If the <Link to="/docs/mcp" className="text-primary-400 hover:underline">MCP server</Link> is connected, your AI does this automatically — the <Link to="/docs/setup#search-sensitivity" className="text-primary-400 hover:underline">search sensitivity</Link> setting controls how aggressively.</p>
+                        <p>If the <Link to="/docs/mcp" className="text-primary-400 hover:underline">MCP server</Link> is connected, your AI does this automatically — the <Link to="/docs/setup#agent-behavior" className="text-primary-400 hover:underline">agent behavior</Link> setting controls how aggressively.</p>
                     </Step>
 
                     <Step title="2. Record decisions as you go">
@@ -48,7 +48,7 @@ decide add -s UI -d "Use Tailwind" -r "Consistent tokens"`} />
                     Decisions persist across sessions. When you start a new AI chat, the AI searches DecisionNode before writing code (if the MCP server is connected). It picks up all existing conventions without you having to repeat anything.
                 </p>
                 <p className="text-zinc-400 text-sm">
-                    With search sensitivity set to <code>high</code> (default), the AI is instructed to search before every code change. On <code>medium</code>, it searches only for significant changes. See <Link to="/docs/mcp#search-sensitivity" className="text-primary-400 hover:underline">search sensitivity</Link>.
+                    With agent behavior set to <code>strict</code> (default), the AI is instructed to search before every code change. On <code>relaxed</code>, it searches only when it thinks it's relevant. See <Link to="/docs/mcp#agent-behavior" className="text-primary-400 hover:underline">agent behavior</Link>.
                 </p>
             </Section>
 
@@ -60,6 +60,12 @@ decide add -s UI -d "Use Tailwind" -r "Consistent tokens"`} />
                 <p className="text-zinc-400 mt-4 text-sm">
                     Global decisions are automatically included in search results for every project. If a project decision conflicts with a global one, the project decision takes priority. See <Link to="/docs/cli#global-decisions" className="text-primary-400 hover:underline">global decisions</Link> in the CLI reference.
                 </p>
+
+                <div className="mt-6 rounded-lg overflow-hidden border border-white/10">
+                    <video autoPlay muted loop playsInline className="w-full">
+                        <source src="/recordings/global.mp4" type="video/mp4" />
+                    </video>
+                </div>
             </Section>
 
             <Section title="Deprecating decisions" id="deprecating">
@@ -74,6 +80,12 @@ decide activate ui-015`} />
                 <p className="text-zinc-400 mt-4 text-sm">
                     Deprecated decisions still show up in <code>decide list</code> (marked with ⚠️). The <Link to="/docs/decisions#lifecycle" className="text-primary-400 hover:underline">embedding is preserved</Link>, so re-activating is instant. See <Link to="/docs/decisions#lifecycle" className="text-primary-400 hover:underline">lifecycle</Link>.
                 </p>
+
+                <div className="mt-6 rounded-lg overflow-hidden border border-white/10">
+                    <video autoPlay muted loop playsInline className="w-full">
+                        <source src="/recordings/deprecate.mp4" type="video/mp4" />
+                    </video>
+                </div>
             </Section>
 
             <Section title="Moving decisions between projects" id="migrating">
@@ -93,6 +105,24 @@ decide import ~/decisions.json`} />
                 </p>
             </Section>
 
+            <Section title="Reviewing history" id="history">
+                <p className="text-zinc-400 mb-4">
+                    Every add, update, deprecation, activation, and delete is logged — along with which tool made the change. MCP clients are identified by name (e.g. <code>claude-code</code>, <code>cursor</code>) so you can see exactly where each change came from.
+                </p>
+                <CodeBlock code={`# View recent activity
+decide history
+
+# Filter by source
+decide history --filter mcp
+decide history --filter cli`} />
+
+                <div className="mt-6 rounded-lg overflow-hidden border border-white/10">
+                    <video autoPlay muted loop playsInline className="w-full">
+                        <source src="/recordings/history.mp4" type="video/mp4" />
+                    </video>
+                </div>
+            </Section>
+
             <Section title="Checking embedding health" id="health">
                 <p className="text-zinc-400 mb-4">
                     If you've been adding decisions without an API key, or if embedding failed for some reason, decisions won't be searchable. Check and fix:
@@ -105,6 +135,12 @@ decide embed
 
 # Clean up orphaned vectors from deleted decisions
 decide clean`} />
+
+                <div className="mt-6 rounded-lg overflow-hidden border border-white/10">
+                    <video autoPlay muted loop playsInline className="w-full">
+                        <source src="/recordings/embed.mp4" type="video/mp4" />
+                    </video>
+                </div>
             </Section>
         </div>
     );
