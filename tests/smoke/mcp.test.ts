@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import path from 'path';
 
 const MCP_PATH = path.resolve('dist/mcp/server.js');
+const NODE_PATH = process.execPath;
 
 describe('MCP server smoke tests', () => {
     it('responds to initialize request', () => {
@@ -17,18 +18,12 @@ describe('MCP server smoke tests', () => {
             },
         }) + '\n';
 
-        // Send initialize via stdin, the server should respond on stdout
-        const output = execSync(
-            `echo '${request.replace(/'/g, "'\\''")}' | node "${MCP_PATH}"`,
-            {
-                encoding: 'utf-8',
-                timeout: 10000,
-                shell: 'bash',
-            }
-        );
+        const output = execFileSync(NODE_PATH, [MCP_PATH], {
+            encoding: 'utf-8',
+            timeout: 10000,
+            input: request,
+        });
 
-        // MCP uses Content-Length header framing or newline-delimited JSON
-        // Parse the response — it may have Content-Length headers
         const jsonMatch = output.match(/\{.*"result".*\}/s);
         expect(jsonMatch).not.toBeNull();
 
@@ -37,7 +32,7 @@ describe('MCP server smoke tests', () => {
         expect(response.result.serverInfo.name).toBe('decisionnode');
     });
 
-    it('lists 9 tools', async () => {
+    it('lists 9 tools', () => {
         const initRequest = JSON.stringify({
             jsonrpc: '2.0',
             id: 1,
@@ -63,14 +58,11 @@ describe('MCP server smoke tests', () => {
 
         const input = `${initRequest}\n${initializedNotification}\n${listToolsRequest}\n`;
 
-        const output = execSync(
-            `echo '${input.replace(/'/g, "'\\''")}' | node "${MCP_PATH}"`,
-            {
-                encoding: 'utf-8',
-                timeout: 10000,
-                shell: 'bash',
-            }
-        );
+        const output = execFileSync(NODE_PATH, [MCP_PATH], {
+            encoding: 'utf-8',
+            timeout: 10000,
+            input,
+        });
 
         // Find the tools/list response (id: 2)
         const toolsMatch = output.match(/\{[^{}]*"id"\s*:\s*2[^{}]*"result"[^}]*"tools"\s*:\s*\[.*?\]\s*\}/s);
@@ -78,7 +70,6 @@ describe('MCP server smoke tests', () => {
             const response = JSON.parse(toolsMatch[0]);
             expect(response.result.tools).toHaveLength(9);
         } else {
-            // Try parsing all JSON objects from the output
             const jsonObjects = output.split('\n').filter(line => line.includes('"id":2') || line.includes('"id": 2'));
             expect(jsonObjects.length).toBeGreaterThan(0);
         }
