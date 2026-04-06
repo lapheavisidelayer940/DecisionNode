@@ -2,6 +2,19 @@
 
 All notable changes to DecisionNode are documented here.
 
+## [0.4.0] - 2026-04-06
+
+### Added
+- Polished CLI with colored output, box-drawing, and branded banner
+- Hidden API key input in `decide setup` (password-style)
+- Test suite: 32 tests (unit, integration, smoke) with Vitest
+- CHANGELOG.md
+- GitHub issue templates, PR template, and CI workflow (Node 20/22)
+
+### Changed
+- Removed `.mcp.json` from repo (users connect via `claude mcp add`)
+- Requires Node >= 20
+
 ## [0.3.0] - 2026-04-05
 
 ### Added

@@ -13,6 +13,43 @@ import path from 'path';
 const args = process.argv.slice(2);
 const command = args[0];
 
+// ─── ANSI styling helpers ───────────────────────────────────
+const c = {
+    reset: '\x1b[0m',
+    bold: '\x1b[1m',
+    dim: '\x1b[2m',
+    cyan: '\x1b[36m',
+    yellow: '\x1b[33m',
+    green: '\x1b[32m',
+    red: '\x1b[31m',
+    gray: '\x1b[90m',
+    white: '\x1b[97m',
+    bgCyan: '\x1b[46m',
+    bgYellow: '\x1b[43m',
+    black: '\x1b[30m',
+};
+
+function banner() {
+    console.log('');
+    console.log(`  ${c.cyan}╔══════════════════════════════════════╗${c.reset}`);
+    console.log(`  ${c.cyan}║${c.reset}  ${c.bold}${c.cyan}◆${c.reset} ${c.bold}${c.white}Decision${c.yellow}Node${c.reset}                   ${c.cyan}║${c.reset}`);
+    console.log(`  ${c.cyan}╚══════════════════════════════════════╝${c.reset}`);
+}
+
+function box(lines: string[], color: string = c.cyan) {
+    const maxLen = Math.max(...lines.map(l => stripAnsi(l).length));
+    const pad = (s: string) => s + ' '.repeat(maxLen - stripAnsi(s).length);
+    console.log(`  ${color}┌${'─'.repeat(maxLen + 2)}┐${c.reset}`);
+    for (const line of lines) {
+        console.log(`  ${color}│${c.reset} ${pad(line)} ${color}│${c.reset}`);
+    }
+    console.log(`  ${color}└${'─'.repeat(maxLen + 2)}┘${c.reset}`);
+}
+
+function stripAnsi(s: string): string {
+    return s.replace(/\x1b\[[0-9;]*m/g, '');
+}
+
 async function main() {
     try {
         switch (command) {
@@ -135,7 +172,7 @@ async function main() {
                 break;
         }
     } catch (error) {
-        console.error('❌ Error:', (error as Error).message);
+        console.error(`\n  ${c.red}✗${c.reset} ${(error as Error).message}\n`);
         process.exit(1);
     }
 }
@@ -156,13 +193,13 @@ async function handleList() {
     const allDecisions = [...projectDecisions, ...globalDecisions];
 
     if (allDecisions.length === 0) {
-        console.log('📭 No decisions found.');
-        console.log('\nRun: decide add');
+        console.log(`\n  ${c.dim}No decisions found.${c.reset}`);
+        console.log(`  Run: ${c.cyan}decide add${c.reset}\n`);
         return;
     }
 
     const label = globalOnly ? 'Global Decisions' : `Decisions${scope ? ` (${scope})` : ''}`;
-    console.log(`\n📋 ${label}: \n`);
+    console.log(`\n  ${c.bold}${c.white}${label}${c.reset}\n`);
 
     // Show global decisions first, then project decisions
     if (globalDecisions.length > 0) {
@@ -172,13 +209,12 @@ async function handleList() {
             globalGrouped[d.scope].push(d);
         }
 
-        console.log('🌐 Global');
+        console.log(`  ${c.yellow}● Global${c.reset}`);
         for (const [scopeName, scopeDecisions] of Object.entries(globalGrouped)) {
-            console.log(`  📁 ${scopeName} `);
+            console.log(`    ${c.dim}${scopeName}${c.reset}`);
             for (const d of scopeDecisions) {
-                const statusIcon = d.status === 'active' ? '✅' :
-                    '⚠️';
-                console.log(`     ${statusIcon} [${d.id}] ${d.decision} `);
+                const status = d.status === 'active' ? `${c.green}●${c.reset}` : `${c.dim}○${c.reset}`;
+                console.log(`      ${status} ${c.cyan}${d.id}${c.reset} ${d.decision}`);
             }
         }
         console.log('');
@@ -192,11 +228,10 @@ async function handleList() {
         }
 
         for (const [scopeName, scopeDecisions] of Object.entries(grouped)) {
-            console.log(`📁 ${scopeName} `);
+            console.log(`  ${c.dim}${scopeName}${c.reset}`);
             for (const d of scopeDecisions) {
-                const statusIcon = d.status === 'active' ? '✅' :
-                    '⚠️';
-                console.log(`   ${statusIcon} [${d.id}] ${d.decision} `);
+                const status = d.status === 'active' ? `${c.green}●${c.reset}` : `${c.dim}○${c.reset}`;
+                console.log(`    ${status} ${c.cyan}${d.id}${c.reset} ${d.decision}`);
             }
             console.log('');
         }
@@ -205,13 +240,13 @@ async function handleList() {
     const parts = [];
     if (projectDecisions.length > 0) parts.push(`${projectDecisions.length} project`);
     if (globalDecisions.length > 0) parts.push(`${globalDecisions.length} global`);
-    console.log(`Total: ${parts.join(' + ')} decisions`);
+    console.log(`  ${c.dim}${parts.join(' + ')} decisions${c.reset}\n`);
 }
 
 async function handleGet() {
     const id = args[1];
     if (!id) {
-        console.log('Usage: decide get <decision-id>');
+        console.log(`\n  ${c.dim}Usage:${c.reset} ${c.cyan}decide get${c.reset} ${c.gray}<decision-id>${c.reset}\n`);
         return;
     }
 
@@ -220,22 +255,21 @@ async function handleGet() {
         : await getDecisionById(id);
 
     if (!decision) {
-        console.log(`❌ Decision "${id}" not found`);
+        console.log(`\n  ${c.red}✗${c.reset} Decision "${id}" not found\n`);
         return;
     }
 
-    console.log('\n' + '─'.repeat(60));
-    console.log(`📌 ${decision.id} `);
-    console.log('─'.repeat(60));
-    console.log(`\n📋 Decision: ${decision.decision} `);
+    const statusColor = decision.status === 'active' ? c.green : c.dim;
+    console.log('');
+    console.log(`  ${c.cyan}${c.bold}${decision.id}${c.reset}  ${statusColor}${decision.status}${c.reset}`);
+    console.log(`  ${c.gray}${'─'.repeat(50)}${c.reset}`);
+    console.log(`  ${c.white}${decision.decision}${c.reset}`);
     if (decision.rationale) {
-        console.log(`\n💡 Rationale: ${decision.rationale} `);
+        console.log(`  ${c.dim}Rationale:${c.reset} ${decision.rationale}`);
     }
-    console.log(`\n📁 Scope: ${decision.scope} `);
-    console.log(`📊 Status: ${decision.status} `);
-
+    console.log(`  ${c.dim}Scope:${c.reset} ${decision.scope}`);
     if (decision.constraints?.length) {
-        console.log(`⚠️  Constraints: ${decision.constraints.join(', ')} `);
+        console.log(`  ${c.dim}Constraints:${c.reset} ${decision.constraints.join(', ')}`);
     }
     console.log('');
 }
@@ -243,7 +277,7 @@ async function handleGet() {
 async function handleSearch() {
     const query = args.slice(1).join(' ');
     if (!query) {
-        console.log('Usage: decide search "<your question>"');
+        console.log(`\n  ${c.dim}Usage:${c.reset} ${c.cyan}decide search${c.reset} ${c.gray}"your question"${c.reset}\n`);
         return;
     }
 
@@ -252,22 +286,53 @@ async function handleSearch() {
         const results = await findRelevantDecisions(query, 5);
 
         if (results.length === 0) {
-            console.log('🔍 No relevant decisions found.');
-            console.log('   (Have you added decisions yet?)');
+            console.log(`\n  ${c.dim}No relevant decisions found.${c.reset}`);
+            console.log(`  ${c.dim}Have you added decisions yet?${c.reset}\n`);
             return;
         }
 
-        console.log(`\n🔍 Results for: "${query}"\n`);
+        console.log(`\n  ${c.bold}${c.white}Results for:${c.reset} ${c.dim}"${query}"${c.reset}\n`);
 
         for (const result of results) {
             const score = (result.score * 100).toFixed(0);
-            console.log(`[${score}%] ${result.decision.id}: ${result.decision.decision} `);
+            const scoreColor = Number(score) >= 80 ? c.green : Number(score) >= 60 ? c.yellow : c.dim;
+            console.log(`  ${scoreColor}${score}%${c.reset}  ${c.cyan}${result.decision.id}${c.reset}  ${result.decision.decision}`);
         }
         console.log('');
     } catch (error) {
-        console.log('❌ Semantic search requires a Gemini API key.');
-        console.log('   Run: decide setup');
+        console.log(`\n  ${c.red}✗${c.reset} Semantic search requires a Gemini API key.`);
+        console.log(`  Run: ${c.cyan}decide setup${c.reset}\n`);
     }
+}
+
+function readHidden(promptText: string): Promise<string> {
+    return new Promise((resolve) => {
+        process.stderr.write(promptText);
+        const stdin = process.stdin;
+        const wasRaw = stdin.isRaw;
+        stdin.setRawMode(true);
+        stdin.resume();
+        stdin.setEncoding('utf-8');
+
+        let input = '';
+        const onData = (ch: string) => {
+            if (ch === '\r' || ch === '\n') {
+                stdin.setRawMode(wasRaw ?? false);
+                stdin.pause();
+                stdin.removeListener('data', onData);
+                resolve(input);
+            } else if (ch === '\u0003') {
+                // Ctrl+C
+                process.exit(0);
+            } else if (ch === '\u007f' || ch === '\b') {
+                // Backspace
+                input = input.slice(0, -1);
+            } else {
+                input += ch;
+            }
+        };
+        stdin.on('data', onData);
+    });
 }
 
 function prompt(question: string, defaultValue?: string): Promise<string> {
@@ -312,26 +377,26 @@ async function handleAddDecision() {
         constraintsInput = getFlag('--constraints') || getFlag('-c') || '';
     } else {
         // Interactive mode
-        console.log(`\n➕ Add New ${isGlobal ? 'Global ' : ''}Decision\n`);
+        console.log(`\n  ${c.bold}${c.white}New ${isGlobal ? 'Global ' : ''}Decision${c.reset}\n`);
 
         // Show existing scopes for consistency
         const existingScopes = isGlobal ? await getGlobalScopes() : await getAvailableScopes();
         if (existingScopes.length > 0) {
-            console.log(`Existing scopes: ${existingScopes.join(', ')} \n`);
+            console.log(`  ${c.dim}Existing scopes:${c.reset} ${c.cyan}${existingScopes.join(', ')}${c.reset}\n`);
         }
 
         const scopeExamples = existingScopes.length > 0
             ? existingScopes.slice(0, 3).join(', ')
             : 'UI, Backend, API';
-        scope = await prompt(`Scope (e.g., ${scopeExamples} - capitalization doesn't matter): `);
+        scope = await prompt(`  ${c.yellow}▸${c.reset} Scope (e.g., ${scopeExamples}): `);
         if (!scope.trim()) {
-            console.log('❌ Scope is required');
+            console.log(`  ${c.red}✗${c.reset} Scope is required\n`);
             return;
         }
 
-        decisionText = await prompt('Decision: ');
+        decisionText = await prompt(`  ${c.yellow}▸${c.reset} Decision: `);
         if (!decisionText.trim()) {
-            console.log('❌ Decision text is required');
+            console.log(`  ${c.red}✗${c.reset} Decision text is required\n`);
             return;
         }
 
@@ -341,15 +406,15 @@ async function handleAddDecision() {
             const conflicts = await findPotentialConflicts(`${scope}: ${decisionText}`, 0.75);
 
             if (conflicts.length > 0) {
-                console.log('\n⚠️  Similar decisions found:\n');
+                console.log(`\n  ${c.yellow}!${c.reset} ${c.bold}Similar decisions found:${c.reset}\n`);
                 for (const { decision, score } of conflicts) {
                     const similarity = Math.round(score * 100);
-                    console.log(`   ${decision.id}: ${decision.decision.substring(0, 50)}... (${similarity}% similar)`);
+                    console.log(`    ${c.yellow}${similarity}%${c.reset}  ${c.cyan}${decision.id}${c.reset}  ${decision.decision.substring(0, 50)}...`);
                 }
                 console.log('');
-                const proceed = await prompt('Continue anyway? (y/N): ');
+                const proceed = await prompt(`  Continue anyway? ${c.dim}(y/N):${c.reset} `);
                 if (proceed.toLowerCase() !== 'y') {
-                    console.log('Cancelled.');
+                    console.log(`  ${c.dim}Cancelled.${c.reset}\n`);
                     return;
                 }
             }
@@ -357,8 +422,8 @@ async function handleAddDecision() {
             // Conflict check failed (API key not set) - continue anyway
         }
 
-        rationale = await prompt('Rationale (optional): ');
-        constraintsInput = await prompt('Constraints (comma-separated, optional): ');
+        rationale = await prompt(`  ${c.yellow}▸${c.reset} Rationale ${c.dim}(optional):${c.reset} `);
+        constraintsInput = await prompt(`  ${c.yellow}▸${c.reset} Constraints ${c.dim}(comma-separated, optional):${c.reset} `);
     }
 
     if (isGlobal) {
@@ -376,14 +441,12 @@ async function handleAddDecision() {
 
         const { embedded } = await addGlobalDecision(newDecision);
 
-        console.log(`\n✅ Created global:${rawId}`);
-        console.log(`   This decision applies to all projects`);
+        console.log(`\n  ${c.green}✓${c.reset} Created ${c.cyan}global:${rawId}${c.reset}`);
+        console.log(`  ${c.dim}Applies to all projects${c.reset}`);
         if (embedded) {
-            console.log(`   Auto-embedded for semantic search`);
+            console.log(`  ${c.dim}Embedded for semantic search${c.reset}`);
         } else {
-            console.log(`\n⚠️  Not embedded — semantic search won't find this decision.`);
-            console.log(`   Run: decide setup    (to set your Gemini API key)`);
-            console.log(`   Then: decide embed   (to embed all unembedded decisions)`);
+            console.log(`\n  ${c.yellow}!${c.reset} Not embedded — run ${c.cyan}decide setup${c.reset} then ${c.cyan}decide embed${c.reset}`);
         }
     } else {
         const id = await getNextDecisionId(scope.trim());
@@ -400,13 +463,11 @@ async function handleAddDecision() {
 
         const { embedded } = await addDecision(newDecision);
 
-        console.log(`\n✅ Created ${id}`);
+        console.log(`\n  ${c.green}✓${c.reset} Created ${c.cyan}${id}${c.reset}`);
         if (embedded) {
-            console.log(`   Auto-embedded for semantic search`);
+            console.log(`  ${c.dim}Embedded for semantic search${c.reset}`);
         } else {
-            console.log(`\n⚠️  Not embedded — semantic search won't find this decision.`);
-            console.log(`   Run: decide setup    (to set your Gemini API key)`);
-            console.log(`   Then: decide embed   (to embed all unembedded decisions)`);
+            console.log(`\n  ${c.yellow}!${c.reset} Not embedded — run ${c.cyan}decide setup${c.reset} then ${c.cyan}decide embed${c.reset}`);
         }
     }
 }
@@ -414,7 +475,7 @@ async function handleAddDecision() {
 async function handleEdit() {
     const id = args[1];
     if (!id) {
-        console.log('Usage: decide edit <decision-id>');
+        console.log(`\n  ${c.dim}Usage:${c.reset} ${c.cyan}decide edit${c.reset} ${c.gray}<decision-id>${c.reset}\n`);
         return;
     }
 
@@ -424,21 +485,21 @@ async function handleEdit() {
         : await getDecisionById(id);
 
     if (!decision) {
-        console.log(`❌ Decision ${id} not found`);
+        console.log(`\n  ${c.red}✗${c.reset} Decision "${id}" not found\n`);
         return;
     }
 
     if (global) {
-        console.log(`\n⚠️  This is a global decision that affects ALL projects.`);
-        const confirm = await prompt('Continue editing? (y/N): ');
+        console.log(`\n  ${c.yellow}!${c.reset} This is a global decision that affects ${c.bold}all projects${c.reset}.`);
+        const confirm = await prompt(`  Continue editing? ${c.dim}(y/N):${c.reset} `);
         if (confirm.trim().toLowerCase() !== 'y') {
-            console.log('Cancelled.');
+            console.log(`  ${c.dim}Cancelled.${c.reset}\n`);
             return;
         }
     }
 
-    console.log(`\n✏️  Editing ${id}`);
-    console.log('Press Enter to keep current value.\n');
+    console.log(`\n  ${c.bold}${c.white}Editing${c.reset} ${c.cyan}${id}${c.reset}`);
+    console.log(`  ${c.dim}Press Enter to keep current value.${c.reset}\n`);
 
     const newDecision = await prompt('Decision: ', decision.decision);
     const newRationale = await prompt('Rationale: ', decision.rationale || '');
@@ -450,7 +511,7 @@ async function handleEdit() {
     if (newConstraints.trim()) updates.constraints = newConstraints.split(',').map(s => s.trim());
 
     if (Object.keys(updates).length === 0) {
-        console.log('\nNo changes made.');
+        console.log(`\n  ${c.dim}No changes made.${c.reset}\n`);
         return;
     }
 
@@ -459,14 +520,14 @@ async function handleEdit() {
     } else {
         await updateDecision(id, updates);
     }
-    console.log(`\n✅ Updated ${id}`);
-    console.log(`   Auto-embedded for semantic search`);
+    console.log(`\n  ${c.green}✓${c.reset} Updated ${c.cyan}${id}${c.reset}`);
+    console.log(`  ${c.dim}Embedded for semantic search${c.reset}\n`);
 }
 
 async function handleDelete() {
     const id = args[1];
     if (!id) {
-        console.log('Usage: decide delete <decision-id>');
+        console.log(`\n  ${c.dim}Usage:${c.reset} ${c.cyan}decide delete${c.reset} ${c.gray}<decision-id>${c.reset}\n`);
         return;
     }
 
@@ -476,20 +537,20 @@ async function handleDelete() {
         : await getDecisionById(id);
 
     if (!decision) {
-        console.log(`❌ Decision ${id} not found`);
+        console.log(`\n  ${c.red}✗${c.reset} Decision "${id}" not found\n`);
         return;
     }
 
-    console.log(`\n🗑️  Delete: ${id}`);
-    console.log(`   "${decision.decision}"\n`);
+    console.log(`\n  ${c.red}${c.bold}Delete${c.reset} ${c.cyan}${id}${c.reset}`);
+    console.log(`  ${c.dim}"${decision.decision}"${c.reset}\n`);
 
     if (global) {
-        console.log(`⚠️  This is a global decision that affects ALL projects.`);
+        console.log(`  ${c.yellow}!${c.reset} This is a global decision that affects ${c.bold}all projects${c.reset}.`);
     }
 
-    const confirm = await prompt('Type "yes" to confirm: ');
+    const confirm = await prompt(`  Type ${c.bold}"yes"${c.reset} to confirm: `);
     if (confirm.trim().toLowerCase() !== 'yes') {
-        console.log('Cancelled.');
+        console.log(`  ${c.dim}Cancelled.${c.reset}\n`);
         return;
     }
 
@@ -516,13 +577,13 @@ async function handleDelete() {
         }
     }
 
-    console.log(`\n✅ Deleted ${id}`);
+    console.log(`\n  ${c.green}✓${c.reset} Deleted ${c.cyan}${id}${c.reset}\n`);
 }
 
 async function handleDeprecate() {
     const id = args[1];
     if (!id) {
-        console.log('Usage: decide deprecate <decision-id>');
+        console.log(`\n  ${c.dim}Usage:${c.reset} ${c.cyan}decide deprecate${c.reset} ${c.gray}<decision-id>${c.reset}\n`);
         return;
     }
 
@@ -532,16 +593,16 @@ async function handleDeprecate() {
         : await getDecisionById(id);
 
     if (!decision) {
-        console.log(`❌ Decision ${id} not found`);
+        console.log(`\n  ${c.red}✗${c.reset} Decision "${id}" not found\n`);
         return;
     }
 
     if (decision.status === 'deprecated') {
-        console.log(`⚠️  ${id} is already deprecated.`);
+        console.log(`\n  ${c.yellow}!${c.reset} ${c.cyan}${id}${c.reset} is already deprecated.\n`);
         return;
     }
 
-    console.log(`\n📌 ${id}: ${decision.decision}`);
+    console.log(`\n  ${c.cyan}${id}${c.reset}  ${decision.decision}`);
 
     if (global) {
         await updateGlobalDecision(id, { status: 'deprecated' });
@@ -549,14 +610,13 @@ async function handleDeprecate() {
         await updateDecision(id, { status: 'deprecated' });
     }
 
-    console.log(`\n✅ Deprecated ${id}`);
-    console.log(`   This decision will no longer appear in search results.`);
+    console.log(`  ${c.green}✓${c.reset} Deprecated — hidden from search results\n`);
 }
 
 async function handleActivate() {
     const id = args[1];
     if (!id) {
-        console.log('Usage: decide activate <decision-id>');
+        console.log(`\n  ${c.dim}Usage:${c.reset} ${c.cyan}decide activate${c.reset} ${c.gray}<decision-id>${c.reset}\n`);
         return;
     }
 
@@ -566,16 +626,16 @@ async function handleActivate() {
         : await getDecisionById(id);
 
     if (!decision) {
-        console.log(`❌ Decision ${id} not found`);
+        console.log(`\n  ${c.red}✗${c.reset} Decision "${id}" not found\n`);
         return;
     }
 
     if (decision.status === 'active') {
-        console.log(`⚠️  ${id} is already active.`);
+        console.log(`\n  ${c.yellow}!${c.reset} ${c.cyan}${id}${c.reset} is already active.\n`);
         return;
     }
 
-    console.log(`\n📌 ${id}: ${decision.decision}`);
+    console.log(`\n  ${c.cyan}${id}${c.reset}  ${decision.decision}`);
 
     if (global) {
         await updateGlobalDecision(id, { status: 'active' });
@@ -583,60 +643,51 @@ async function handleActivate() {
         await updateDecision(id, { status: 'active' });
     }
 
-    console.log(`\n✅ Activated ${id}`);
-    console.log(`   This decision will now appear in search results.`);
+    console.log(`  ${c.green}✓${c.reset} Activated — now appears in search results\n`);
 }
 
 async function handleDeleteScope() {
     const scopeArg = args[1];
 
     if (!scopeArg) {
-        console.log('Usage: decide delete-scope <scope>');
-        console.log('\nDeletes all decisions in a scope.');
-        console.log('Example: decide delete-scope UI');
+        console.log(`\n  ${c.dim}Usage:${c.reset} ${c.cyan}decide delete-scope${c.reset} ${c.gray}<scope>${c.reset}\n`);
         return;
     }
 
-    // Show what will be deleted
     const scopes = await getAvailableScopes();
     const normalizedInput = scopeArg.charAt(0).toUpperCase() + scopeArg.slice(1).toLowerCase();
 
     if (!scopes.some(s => s.toLowerCase() === scopeArg.toLowerCase())) {
-        console.log(`❌ Scope "${scopeArg}" not found.`);
-        console.log(`Available scopes: ${scopes.join(', ')}`);
+        console.log(`\n  ${c.red}✗${c.reset} Scope "${scopeArg}" not found.`);
+        console.log(`  ${c.dim}Available:${c.reset} ${c.cyan}${scopes.join(', ')}${c.reset}\n`);
         return;
     }
 
     const decisions = await listDecisions(normalizedInput);
-    console.log(`\n⚠️  This will delete the "${normalizedInput}" scope and ALL ${decisions.length} decision(s) in it:`);
-    decisions.forEach(d => console.log(`   - ${d.id}: ${d.decision.substring(0, 50)}...`));
+    console.log(`\n  ${c.red}${c.bold}Delete scope${c.reset} ${c.cyan}${normalizedInput}${c.reset} ${c.dim}(${decisions.length} decisions)${c.reset}\n`);
+    decisions.forEach(d => console.log(`    ${c.dim}─${c.reset} ${c.cyan}${d.id}${c.reset}  ${d.decision.substring(0, 50)}`));
 
-    console.log('\n⚠️  This action cannot be undone!');
-    const confirm = await prompt('Type the scope name to confirm deletion: ');
+    console.log(`\n  ${c.yellow}!${c.reset} This cannot be undone.`);
+    const confirm = await prompt(`  Type the scope name to confirm: `);
 
     if (confirm.toLowerCase() !== scopeArg.toLowerCase() && confirm.toLowerCase() !== normalizedInput.toLowerCase()) {
-        console.log('❌ Deletion cancelled.');
+        console.log(`  ${c.dim}Cancelled.${c.reset}\n`);
         return;
     }
 
     const result = await deleteScope(scopeArg);
-    console.log(`\n✅ Deleted scope "${normalizedInput}" (${result.deleted} decisions removed)`);
+    console.log(`\n  ${c.green}✓${c.reset} Deleted scope ${c.cyan}${normalizedInput}${c.reset} ${c.dim}(${result.deleted} decisions)${c.reset}\n`);
 }
 
 async function handleImport() {
     const globalFlag = args.includes('--global');
     const filePath = args.find(a => a !== 'import' && a !== '--global' && a !== '--overwrite' && !a.startsWith('-'));
     if (!filePath) {
-        console.log('Usage: decide import <file.json> [--global] [--overwrite]');
-        console.log('\nExample JSON format:');
-        console.log(`[
-  { "id": "ui-001", "scope": "UI", "decision": "...", "status": "active" },
-  { "id": "ui-002", "scope": "UI", "decision": "...", "status": "active" }
-]`);
+        console.log(`\n  ${c.dim}Usage:${c.reset} ${c.cyan}decide import${c.reset} ${c.gray}<file.json>${c.reset} ${c.dim}[--global] [--overwrite]${c.reset}\n`);
         return;
     }
 
-    console.log(`\n📥 Importing from ${filePath}${globalFlag ? ' (global)' : ''}...`);
+    console.log(`\n  ${c.bold}${c.white}Importing${c.reset} ${c.dim}${filePath}${globalFlag ? ' (global)' : ''}${c.reset}`);
 
     try {
         const content = await fs.readFile(filePath, 'utf-8');
@@ -646,14 +697,13 @@ async function handleImport() {
         const decisions: DecisionNode[] = Array.isArray(data) ? data : data.decisions;
 
         if (!decisions || decisions.length === 0) {
-            console.log('❌ No decisions found in file');
+            console.log(`  ${c.red}✗${c.reset} No decisions found in file\n`);
             return;
         }
 
         const overwriteFlag = args.includes('--overwrite');
 
         if (globalFlag) {
-            // Import into global store
             let added = 0;
             let skipped = 0;
             for (const decision of decisions) {
@@ -664,19 +714,15 @@ async function handleImport() {
                     skipped++;
                 }
             }
-            console.log(`\n✅ Import complete (global)`);
-            console.log(`   Added: ${added}`);
-            console.log(`   Skipped: ${skipped}`);
+            console.log(`\n  ${c.green}✓${c.reset} Import complete ${c.dim}(global)${c.reset}`);
+            console.log(`    ${c.green}${added}${c.reset} added  ${c.dim}${skipped} skipped${c.reset}\n`);
         } else {
             const result = await importDecisions(decisions, { overwrite: overwriteFlag });
-
-            console.log(`\n✅ Import complete`);
-            console.log(`   Added: ${result.added}`);
-            console.log(`   Skipped: ${result.skipped}`);
-            console.log(`   Embedded: ${result.embedded}`);
+            console.log(`\n  ${c.green}✓${c.reset} Import complete`);
+            console.log(`    ${c.green}${result.added}${c.reset} added  ${c.dim}${result.skipped} skipped  ${result.embedded} embedded${c.reset}\n`);
         }
     } catch (error) {
-        console.log(`❌ Import failed: ${(error as Error).message}`);
+        console.log(`\n  ${c.red}✗${c.reset} Import failed: ${(error as Error).message}\n`);
     }
 }
 
@@ -691,20 +737,18 @@ async function handleHistory() {
             return;
         }
 
-        console.log(`\n📜 Snapshot: ${entry.id}`);
-        console.log(`   Action: ${entry.action}`);
-        console.log(`   Time: ${new Date(entry.timestamp).toLocaleString()}`);
-        console.log(`   ${entry.description}\n`);
+        console.log(`\n  ${c.bold}${c.white}Snapshot${c.reset} ${c.cyan}${entry.id}${c.reset}`);
+        console.log(`  ${c.dim}Action:${c.reset} ${entry.action}  ${c.dim}Time:${c.reset} ${new Date(entry.timestamp).toLocaleString()}`);
+        console.log(`  ${c.dim}${entry.description}${c.reset}\n`);
 
         const decisions = getDecisionsFromSnapshot(entry.snapshot);
-        console.log(`Decisions at this point (${decisions.length}):\n`);
+        console.log(`  ${c.dim}Decisions at this point (${decisions.length}):${c.reset}\n`);
 
         for (const d of decisions) {
-            console.log(`\n─── ${d.id} ───`);
-            console.log(`  Decision: ${d.decision}`);
-            if (d.rationale) console.log(`  Rationale: ${d.rationale}`);
-            if (d.constraints?.length) console.log(`  Constraints: ${d.constraints.join(', ')}`);
-            console.log(`  Status: ${d.status}`);
+            console.log(`  ${c.cyan}${d.id}${c.reset}  ${d.decision}`);
+            if (d.rationale) console.log(`    ${c.dim}Rationale:${c.reset} ${d.rationale}`);
+            if (d.constraints?.length) console.log(`    ${c.dim}Constraints:${c.reset} ${d.constraints.join(', ')}`);
+            console.log(`    ${c.dim}Status:${c.reset} ${d.status}`);
         }
         console.log('');
         return;
@@ -728,34 +772,33 @@ async function handleHistory() {
     }
 
     if (displayedHistory.length === 0) {
-        console.log(`📭 No history found${filter ? ` for filter "${filter}"` : ''}.`);
+        console.log(`\n  ${c.dim}No history found${filter ? ` for "${filter}"` : ''}.${c.reset}\n`);
         return;
     }
 
-    console.log(`\n📜 Activity History${filter ? ` (Filter: ${filter.toUpperCase()})` : ''}\n`);
-    console.log('━'.repeat(60));
+    console.log(`\n  ${c.bold}${c.white}Activity History${c.reset}${filter ? ` ${c.dim}(${filter})${c.reset}` : ''}\n`);
 
     displayedHistory.forEach(entry => {
         const date = new Date(entry.timestamp).toLocaleString();
         const icon = getActionIcon(entry.action);
-        const source = entry.source ? `[${entry.source.toUpperCase()}]` : '[CLI]';
+        const source = entry.source ? entry.source.toUpperCase() : 'CLI';
 
-        console.log(`${icon} ${date} ${source.padEnd(13)} ${entry.description}`);
+        console.log(`  ${icon} ${c.dim}${date}${c.reset}  ${c.gray}${source.padEnd(5)}${c.reset}  ${entry.description}`);
     });
     console.log('');
 }
 
 function getActionIcon(action: string): string {
     switch (action) {
-        case 'added': return '✅';
-        case 'updated': return '✏️ ';
-        case 'deleted': return '🗑️ '; // Windows terminal handles this best
-        case 'imported': return '📥';
-        case 'installed': return '📦';
-        case 'cloud_push': return '⬆️ ';
-        case 'cloud_pull': return '⬇️ ';
-        case 'conflict_resolved': return '🤝';
-        default: return '🔹';
+        case 'added': return `${c.green}+${c.reset}`;
+        case 'updated': return `${c.yellow}~${c.reset}`;
+        case 'deleted': return `${c.red}-${c.reset}`;
+        case 'imported': return `${c.cyan}↓${c.reset}`;
+        case 'installed': return `${c.cyan}■${c.reset}`;
+        case 'cloud_push': return `${c.cyan}↑${c.reset}`;
+        case 'cloud_pull': return `${c.cyan}↓${c.reset}`;
+        case 'conflict_resolved': return `${c.yellow}⇔${c.reset}`;
+        default: return `${c.dim}·${c.reset}`;
     }
 }
 
@@ -778,15 +821,18 @@ async function handleInit() {
     const cwd = process.cwd();
     const projectName = path.basename(cwd);
 
-    console.log('\n🚀 Initializing DecisionNode\n');
-    console.log(`   Project: ${projectName}`);
-    console.log(`   Location: ${cwd}\n`);
+    banner();
+    console.log('');
+    console.log(`  ${c.gray}Project:${c.reset}  ${c.bold}${projectName}${c.reset}`);
+    console.log(`  ${c.gray}Path:${c.reset}     ${c.dim}${cwd}${c.reset}`);
+    console.log('');
 
     // Check if already initialized by looking for existing decisions
     const existingScopes = await getAvailableScopes();
     if (existingScopes.length > 0) {
-        console.log(`✅ Already initialized with ${existingScopes.length} scope(s): ${existingScopes.join(', ')}`);
-        console.log('\n   Run: decide list');
+        console.log(`  ${c.green}✓${c.reset} Already initialized with ${c.bold}${existingScopes.length}${c.reset} scope(s): ${c.cyan}${existingScopes.join(', ')}${c.reset}`);
+        console.log(`\n  Run: ${c.cyan}decide list${c.reset}`);
+        console.log('');
         return;
     }
 
@@ -795,14 +841,23 @@ async function handleInit() {
     const projectRoot = getProjectRoot();
     await fs.mkdir(projectRoot, { recursive: true });
 
-    console.log('\n✅ DecisionNode initialized!\n');
-    console.log('Next steps:');
-    console.log('  1. Configure your API key:       decide setup');
-    console.log('  2. Connect your AI client:');
-    console.log('     Claude Code:                  claude mcp add decisionnode -s user decide-mcp');
-    console.log('     Cursor:                       Add decide-mcp in Cursor Settings → MCP');
-    console.log('     Windsurf:                     Add decide-mcp in Windsurf Settings → MCP');
-    console.log('  3. Add your first decision:      decide add\n');
+    console.log(`  ${c.green}✓${c.reset} Initialized\n`);
+
+    box([
+        `${c.bold}${c.white}Next steps${c.reset}`,
+        '',
+        `${c.yellow}1.${c.reset} Configure your API key`,
+        `   ${c.cyan}decide setup${c.reset}`,
+        '',
+        `${c.yellow}2.${c.reset} Connect your AI client`,
+        `   ${c.dim}Claude Code:${c.reset}  ${c.cyan}claude mcp add decisionnode -s user decide-mcp${c.reset}`,
+        `   ${c.dim}Cursor:${c.reset}       ${c.dim}Add decide-mcp in Settings → MCP${c.reset}`,
+        `   ${c.dim}Windsurf:${c.reset}     ${c.dim}Add decide-mcp in Settings → MCP${c.reset}`,
+        '',
+        `${c.yellow}3.${c.reset} Add your first decision`,
+        `   ${c.cyan}decide add${c.reset}`,
+    ]);
+    console.log('');
 }
 
 async function handleSetup() {
@@ -810,9 +865,11 @@ async function handleSetup() {
     const envPath = path.join(homeDir, '.decisionnode', '.env');
     const envDir = path.dirname(envPath);
 
-    console.log('\n⚙️  DecisionNode Setup\n');
-    console.log('Semantic search requires a Gemini API key (free tier available).');
-    console.log('Get one at: https://aistudio.google.com/\n');
+    banner();
+    console.log('');
+    console.log(`  ${c.gray}Semantic search requires a Gemini API key (free tier).${c.reset}`);
+    console.log(`  ${c.dim}Get one at:${c.reset} ${c.cyan}https://aistudio.google.com/${c.reset}`);
+    console.log('');
 
     // Check if key already exists
     let existingKey = process.env.GEMINI_API_KEY || '';
@@ -826,23 +883,23 @@ async function handleSetup() {
 
     if (existingKey) {
         const masked = existingKey.slice(0, 8) + '...' + existingKey.slice(-4);
-        console.log(`Current key: ${masked}`);
+        console.log(`  ${c.gray}Current key:${c.reset} ${c.dim}${masked}${c.reset}`);
         console.log('');
     }
 
-    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-    const question = (q: string) => new Promise<string>(resolve => rl.question(q, resolve));
-
-    const key = await question(existingKey ? 'New Gemini API key (enter to keep current): ' : 'Gemini API key: ');
-    rl.close();
+    const promptText = existingKey ? `  ${c.yellow}▸${c.reset} New API key (enter to keep current): ` : `  ${c.yellow}▸${c.reset} Gemini API key: `;
+    const key = await readHidden(promptText);
+    console.log(''); // newline after hidden input
 
     if (!key && existingKey) {
-        console.log('\n✅ Keeping existing key.');
+        console.log(`  ${c.green}✓${c.reset} Keeping existing key.`);
+        console.log('');
         return;
     }
 
     if (!key) {
-        console.log('\n⚠️  No key provided. You can run decide setup again later.');
+        console.log(`  ${c.yellow}!${c.reset} No key provided. Run ${c.cyan}decide setup${c.reset} again later.`);
+        console.log('');
         return;
     }
 
@@ -863,63 +920,63 @@ async function handleSetup() {
     await fs.writeFile(envPath, envContent, 'utf-8');
     process.env.GEMINI_API_KEY = key;
 
-    console.log(`\n✅ API key saved to ${envPath}`);
-    console.log('\nYou can now use:');
-    console.log('  decide search "your query"');
-    console.log('  decide embed');
+    console.log(`  ${c.green}✓${c.reset} API key saved\n`);
+
+    box([
+        `${c.bold}${c.white}Ready to go${c.reset}`,
+        '',
+        `${c.cyan}decide add${c.reset}              ${c.dim}Record a decision${c.reset}`,
+        `${c.cyan}decide search "query"${c.reset}    ${c.dim}Semantic search${c.reset}`,
+    ]);
     console.log('');
 }
 
 async function handleEmbed() {
-    console.log('\n⚡ Embedding decisions...\n');
+    console.log(`\n  ${c.bold}${c.white}Embedding decisions${c.reset}\n`);
 
     try {
         const { getUnembeddedDecisions, embedAllDecisions } = await import('./ai/rag.js');
         const unembedded = await getUnembeddedDecisions();
 
         if (unembedded.length === 0) {
-            console.log('✅ All decisions are embedded!');
+            console.log(`  ${c.green}✓${c.reset} All decisions are embedded.\n`);
             return;
         }
 
-        console.log(`Found ${unembedded.length} unembedded decisions:`);
-        unembedded.forEach(d => console.log(`   ⚠️  ${d.id}`));
-        console.log('');
-
-        console.log('Generating embeddings...');
+        console.log(`  ${c.yellow}${unembedded.length}${c.reset} unembedded decisions:`);
+        unembedded.forEach(d => console.log(`    ${c.dim}─${c.reset} ${c.cyan}${d.id}${c.reset}`));
+        console.log(`\n  ${c.dim}Generating embeddings...${c.reset}`);
         const result = await embedAllDecisions();
 
         if (result.embedded.length > 0) {
-            console.log(`\n✅ Embedded: ${result.embedded.join(', ')}`);
+            console.log(`  ${c.green}✓${c.reset} Embedded: ${c.cyan}${result.embedded.join(', ')}${c.reset}`);
         }
         if (result.failed.length > 0) {
-            console.log(`❌ Failed: ${result.failed.join(', ')}`);
+            console.log(`  ${c.red}✗${c.reset} Failed: ${result.failed.join(', ')}`);
         }
+        console.log('');
     } catch (error) {
-        console.log('❌ Embedding requires a Gemini API key.');
-        console.log('   Run: decide setup');
+        console.log(`  ${c.red}✗${c.reset} Requires a Gemini API key.`);
+        console.log(`  Run: ${c.cyan}decide setup${c.reset}\n`);
         process.exit(1);
     }
 }
 
 async function handleCheck() {
-    console.log('\n🔍 Decision Health Check\n');
+    console.log(`\n  ${c.bold}${c.white}Health Check${c.reset}\n`);
 
     const { loadVectorCache, loadGlobalVectorCache } = await import('./ai/rag.js');
 
-    // Project decisions
     const projectDecisions = await listDecisions();
     const projectCache = await loadVectorCache();
     const projectMissing = projectDecisions.filter(d => !projectCache[d.id]);
+    const projectEmbedded = projectDecisions.length - projectMissing.length;
 
-    console.log(`📦 Project: ${projectDecisions.length} decisions`);
-    console.log(`   ✅ Embedded: ${projectDecisions.length - projectMissing.length}`);
+    console.log(`  ${c.dim}Project${c.reset}  ${c.green}${projectEmbedded}${c.reset} embedded  ${projectMissing.length > 0 ? `${c.yellow}${projectMissing.length}${c.reset} missing` : `${c.dim}0 missing${c.reset}`}`);
     if (projectMissing.length > 0) {
-        console.log(`   ⚠️  Missing vectors: ${projectMissing.length}`);
-        projectMissing.forEach(d => console.log(`      - ${d.id}: ${d.decision.substring(0, 50)}`));
+        projectMissing.forEach(d => console.log(`    ${c.yellow}!${c.reset} ${c.cyan}${d.id}${c.reset}  ${d.decision.substring(0, 50)}`));
     }
 
-    // Global decisions
     const globalDecs = await listGlobalDecisions();
     let globalMissingCount = 0;
     if (globalDecs.length > 0) {
@@ -929,41 +986,41 @@ async function handleCheck() {
             return !globalCache[rawId];
         });
         globalMissingCount = globalMissing.length;
+        const globalEmbedded = globalDecs.length - globalMissing.length;
 
-        console.log(`\n🌐 Global: ${globalDecs.length} decisions`);
-        console.log(`   ✅ Embedded: ${globalDecs.length - globalMissing.length}`);
+        console.log(`  ${c.dim}Global${c.reset}   ${c.green}${globalEmbedded}${c.reset} embedded  ${globalMissing.length > 0 ? `${c.yellow}${globalMissing.length}${c.reset} missing` : `${c.dim}0 missing${c.reset}`}`);
         if (globalMissing.length > 0) {
-            console.log(`   ⚠️  Missing vectors: ${globalMissing.length}`);
-            globalMissing.forEach(d => console.log(`      - ${d.id}: ${d.decision.substring(0, 50)}`));
+            globalMissing.forEach(d => console.log(`    ${c.yellow}!${c.reset} ${c.cyan}${d.id}${c.reset}  ${d.decision.substring(0, 50)}`));
         }
     }
 
     const totalMissing = projectMissing.length + globalMissingCount;
     if (totalMissing > 0) {
-        console.log(`\n${totalMissing} decision(s) not searchable. Run: decide embed`);
+        console.log(`\n  ${c.yellow}${totalMissing}${c.reset} not searchable. Run: ${c.cyan}decide embed${c.reset}\n`);
     } else {
-        console.log(`\n✅ All decisions are embedded and searchable!`);
+        console.log(`\n  ${c.green}✓${c.reset} All decisions embedded and searchable.\n`);
     }
 }
 
 async function handleClean() {
-    console.log('\n🧹 Cleaning orphaned data...\n');
+    console.log(`\n  ${c.bold}${c.white}Cleaning${c.reset}\n`);
     try {
         const { cleanOrphanedData } = await import('./maintenance.js');
         const result = await cleanOrphanedData();
 
         if (result.vectorsRemoved === 0 && result.reviewsRemoved === 0) {
-            console.log('✅ Nothing to clean. Your data is tidy!');
+            console.log(`  ${c.green}✓${c.reset} Nothing to clean.\n`);
         } else {
             if (result.vectorsRemoved > 0) {
-                console.log(`✅ Removed ${result.vectorsRemoved} orphaned vectors.`);
+                console.log(`  ${c.green}✓${c.reset} Removed ${result.vectorsRemoved} orphaned vectors`);
             }
             if (result.reviewsRemoved > 0) {
-                console.log(`✅ Removed ${result.reviewsRemoved} orphaned reviews.`);
+                console.log(`  ${c.green}✓${c.reset} Removed ${result.reviewsRemoved} orphaned reviews`);
             }
+            console.log('');
         }
     } catch (error) {
-        console.error('❌ Error cleaning data:', (error as Error).message);
+        console.error(`  ${c.red}✗${c.reset} ${(error as Error).message}\n`);
         process.exit(1);
     }
 }
@@ -1116,33 +1173,28 @@ async function handleMarketplace() {
 }
 
 async function handleProjects() {
-    console.log('\n📂 Available Projects\n');
+    console.log(`\n  ${c.bold}${c.white}Projects${c.reset}\n`);
 
-    // Show global decisions first
     const globalDecisions = await listGlobalDecisions();
     if (globalDecisions.length > 0) {
         const globalScopes = await getGlobalScopes();
-        console.log(`🌐 Global (shared across all projects)`);
-        console.log(`   ${globalDecisions.length} decisions [${globalScopes.join(', ')}]`);
-        console.log('');
+        console.log(`  ${c.yellow}● Global${c.reset}  ${c.dim}${globalDecisions.length} decisions${c.reset}  ${c.dim}[${globalScopes.join(', ')}]${c.reset}`);
     }
 
     const projects = await listProjects();
 
     if (projects.length === 0 && globalDecisions.length === 0) {
-        console.log('No projects found.');
-        console.log('\nCreate decisions with: decide add');
+        console.log(`  ${c.dim}No projects found.${c.reset}`);
+        console.log(`  Run: ${c.cyan}decide add${c.reset}\n`);
         return;
     }
 
     for (const project of projects) {
-        const scopeStr = project.scopes.length > 0 ? `[${project.scopes.join(', ')}]` : '';
-        console.log(`📦 ${project.name}`);
-        console.log(`   ${project.decisionCount} decisions ${scopeStr}`);
-        console.log('');
+        const scopeStr = project.scopes.length > 0 ? `${c.dim}[${project.scopes.join(', ')}]${c.reset}` : '';
+        console.log(`  ${c.cyan}■${c.reset} ${c.bold}${project.name}${c.reset}  ${c.dim}${project.decisionCount} decisions${c.reset}  ${scopeStr}`);
     }
 
-    console.log(`Total: ${projects.length} projects${globalDecisions.length > 0 ? ` + global (${globalDecisions.length} decisions)` : ''}`);
+    console.log(`\n  ${c.dim}${projects.length} projects${globalDecisions.length > 0 ? ` + global (${globalDecisions.length})` : ''}${c.reset}\n`);
 }
 
 /**
@@ -1921,54 +1973,36 @@ async function handleFetch(): Promise<void> {
 }
 
 function printUsage() {
-    console.log(`
-DecisionNode CLI
-
-Usage:
-  decide <command> [options]
-
-Commands:
-  init                  Initialize DecisionNode in current project
-  setup                 Configure Gemini API key
-  list [--scope <s>]    List all decisions (includes global)
-  list --global         List only global decisions
-  get <id>              View a decision
-  search "<query>"      Semantic search (includes global)
-
-  add                   Add a new decision interactively (auto-embeds)
-  add -s <scope> -d <decision> [-r <rationale>] [-c <constraints>]
-                        Add a decision in one command
-  add --global          Add a global decision (applies to all projects)
-  edit <id>             Edit a decision (auto-embeds)
-  deprecate <id>        Deprecate a decision (hides from search)
-  activate <id>         Re-activate a deprecated decision
-  delete <id>           Delete a decision permanently
-
-  import <file.json>    Import decisions from JSON (auto-embeds)
-  import <file> --global  Import into global decisions
-  export [format]       Export decisions (md, json, csv)
-  export --global       Export global decisions
-  check                 Show which decisions are missing embeddings
-  embed                 Embed any unembedded decisions
-  clean                 Remove orphaned vectors and reviews
-  history [entry-id]    View activity log or snapshot
-
-  projects              List all available projects
-  config                View/set configuration
-  delete-scope <scope>  Delete all decisions in a scope
-
-Global decision IDs use the "global:" prefix (e.g., global:ui-001).
-Use this prefix with get, edit, and delete commands.
-
-Examples:
-  decide init
-  decide add
-  decide add --global
-  decide search "What font should I use?"
-  decide list --global
-  decide get global:ui-001
-  decide edit global:ui-001
-`);
+    banner();
+    console.log('');
+    console.log(`  ${c.dim}Usage:${c.reset} ${c.cyan}decide${c.reset} ${c.white}<command>${c.reset} ${c.dim}[options]${c.reset}`);
+    console.log('');
+    console.log(`  ${c.bold}${c.white}Getting Started${c.reset}`);
+    console.log(`    ${c.cyan}init${c.reset}                  ${c.dim}Initialize DecisionNode in current project${c.reset}`);
+    console.log(`    ${c.cyan}setup${c.reset}                 ${c.dim}Configure Gemini API key${c.reset}`);
+    console.log('');
+    console.log(`  ${c.bold}${c.white}Decisions${c.reset}`);
+    console.log(`    ${c.cyan}add${c.reset}                   ${c.dim}Add a new decision (interactive or inline)${c.reset}`);
+    console.log(`    ${c.cyan}list${c.reset}                  ${c.dim}List all decisions (includes global)${c.reset}`);
+    console.log(`    ${c.cyan}get${c.reset} ${c.gray}<id>${c.reset}              ${c.dim}View a decision${c.reset}`);
+    console.log(`    ${c.cyan}search${c.reset} ${c.gray}"query"${c.reset}        ${c.dim}Semantic search${c.reset}`);
+    console.log(`    ${c.cyan}edit${c.reset} ${c.gray}<id>${c.reset}             ${c.dim}Edit a decision${c.reset}`);
+    console.log(`    ${c.cyan}deprecate${c.reset} ${c.gray}<id>${c.reset}        ${c.dim}Hide from search (reversible)${c.reset}`);
+    console.log(`    ${c.cyan}activate${c.reset} ${c.gray}<id>${c.reset}         ${c.dim}Re-activate a deprecated decision${c.reset}`);
+    console.log(`    ${c.cyan}delete${c.reset} ${c.gray}<id>${c.reset}           ${c.dim}Permanently delete${c.reset}`);
+    console.log('');
+    console.log(`  ${c.bold}${c.white}Data${c.reset}`);
+    console.log(`    ${c.cyan}export${c.reset} ${c.gray}[format]${c.reset}       ${c.dim}Export (md, json, csv)${c.reset}`);
+    console.log(`    ${c.cyan}import${c.reset} ${c.gray}<file>${c.reset}         ${c.dim}Import from JSON${c.reset}`);
+    console.log(`    ${c.cyan}check${c.reset}                 ${c.dim}Show unembedded decisions${c.reset}`);
+    console.log(`    ${c.cyan}embed${c.reset}                 ${c.dim}Embed any unembedded decisions${c.reset}`);
+    console.log(`    ${c.cyan}history${c.reset}               ${c.dim}View activity log${c.reset}`);
+    console.log(`    ${c.cyan}projects${c.reset}              ${c.dim}List all projects${c.reset}`);
+    console.log(`    ${c.cyan}config${c.reset}                ${c.dim}View/set configuration${c.reset}`);
+    console.log('');
+    console.log(`  ${c.dim}Global decisions use the ${c.reset}${c.yellow}global:${c.reset}${c.dim} prefix (e.g., ${c.reset}${c.yellow}global:ui-001${c.reset}${c.dim})${c.reset}`);
+    console.log(`  ${c.dim}Docs: ${c.cyan}https://decisionnode.dev/docs${c.reset}`);
+    console.log('');
 }
 
 /**
@@ -1979,43 +2013,40 @@ async function handleConfig(): Promise<void> {
     const value = args[2];
 
     if (!subCommand) {
-        // Show current config
         const sensitivity = getSearchSensitivity();
-        console.log('\n⚙️  DecisionNode Configuration\n');
-        console.log(`  search-sensitivity: ${sensitivity}`);
-        console.log('\n  Options:');
-        console.log('    search-sensitivity  high|medium');
-        console.log('\n  Usage: decide config <option> <value>');
+        console.log(`\n  ${c.bold}${c.white}Configuration${c.reset}\n`);
+        console.log(`  ${c.dim}search-sensitivity${c.reset}  ${c.cyan}${sensitivity}${c.reset}`);
+        console.log(`\n  ${c.dim}Usage:${c.reset} ${c.cyan}decide config${c.reset} ${c.gray}<option> <value>${c.reset}\n`);
         return;
     }
 
     if (subCommand === 'search-sensitivity') {
         if (!value) {
             const current = getSearchSensitivity();
-            console.log(`\n🔍 Current search-sensitivity: ${current}`);
-            console.log('\nUsage: decide config search-sensitivity <high|medium>');
+            console.log(`\n  ${c.dim}search-sensitivity:${c.reset} ${c.cyan}${current}${c.reset}`);
+            console.log(`  ${c.dim}Usage:${c.reset} ${c.cyan}decide config search-sensitivity${c.reset} ${c.gray}<high|medium>${c.reset}\n`);
             return;
         }
 
         if (value !== 'high' && value !== 'medium') {
-            console.error('❌ Invalid value. Use "high" or "medium"');
+            console.error(`  ${c.red}✗${c.reset} Invalid value. Use ${c.cyan}high${c.reset} or ${c.cyan}medium${c.reset}\n`);
             process.exit(1);
         }
 
         setSearchSensitivity(value as SearchSensitivity);
-        console.log(`\n✅ Search sensitivity set to: ${value}`);
+        console.log(`\n  ${c.green}✓${c.reset} Search sensitivity: ${c.cyan}${value}${c.reset}`);
 
         if (value === 'high') {
-            console.log('   AI will be REQUIRED to search decisions before any code changes.');
+            console.log(`  ${c.dim}AI must search before any code change${c.reset}`);
         } else {
-            console.log('   AI will check decisions for significant changes only.');
+            console.log(`  ${c.dim}AI searches for significant changes only${c.reset}`);
         }
-        console.log('\n💡 Refresh your MCP Server Config for changes to take effect.');
+        console.log(`\n  ${c.dim}Restart your MCP server for changes to take effect.${c.reset}\n`);
         return;
     }
 
-    console.error(`❌ Unknown config option: ${subCommand}`);
-    console.log('Available options: search-sensitivity, auto-sync');
+    console.error(`  ${c.red}✗${c.reset} Unknown option: ${subCommand}`);
+    console.log(`  ${c.dim}Available:${c.reset} search-sensitivity\n`);
     process.exit(1);
 }
 
