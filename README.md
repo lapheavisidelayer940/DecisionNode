@@ -6,7 +6,7 @@
 
 <p align="center">
   Record a decision, embed it as a vector, search it later.<br/>
-  Works from the CLI or through your AI via MCP.
+  One store shared across all your AI tools: Claude Code, Cursor, Windsurf, and any MCP client.
 </p>
 
 <p align="center">
