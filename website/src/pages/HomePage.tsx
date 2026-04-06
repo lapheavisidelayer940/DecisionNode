@@ -73,7 +73,7 @@ export default function HomePage() {
 
             {/* Hero */}
             <section className="relative pt-28 pb-20 border-b border-white/5 overflow-hidden">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl pointer-events-none z-0">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl pointer-events-none z-0 hidden md:block">
                     <div className="absolute top-20 left-[20%] w-72 h-72 bg-primary-500/15 rounded-full blur-[100px] animate-pulse-slow" />
                     <div className="absolute top-40 right-[20%] w-96 h-96 bg-accent-500/10 rounded-full blur-[120px] animate-pulse-slow" style={{ animationDelay: '1s' }} />
                 </div>
@@ -109,8 +109,8 @@ export default function HomePage() {
 
             {/* Demo video */}
             <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 mb-20 relative z-20">
-                <div ref={playerRef} className="rounded-2xl overflow-hidden border border-white/10 bg-zinc-900/50 backdrop-blur-md shadow-2xl relative group">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-primary-500/20 to-accent-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                <div ref={playerRef} className="rounded-2xl overflow-hidden border border-white/10 bg-zinc-900/50 md:backdrop-blur-md shadow-2xl relative group">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-primary-500/20 to-accent-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none hidden md:block" />
                     <div className="relative z-10">
                         {/* Terminal title bar */}
                         <div className="px-4 py-2 bg-zinc-900/80 border-b border-white/5 flex items-center gap-2">
@@ -121,10 +121,10 @@ export default function HomePage() {
                             </div>
                         </div>
 
-                        {/* Video (no native controls) */}
+                        {/* Video with custom controls on desktop, native controls on mobile */}
                         <video
                             ref={videoRef}
-                            className="w-full cursor-pointer"
+                            className="w-full cursor-pointer hidden md:block"
                             autoPlay
                             muted
                             loop
@@ -135,8 +135,23 @@ export default function HomePage() {
                             <source src="/demo.mp4" type="video/mp4" />
                         </video>
 
-                        {/* Custom controls */}
-                        <div className="px-4 py-2 bg-zinc-900/80 border-t border-white/5 flex items-center gap-3">
+                        {/* Mobile video with native controls */}
+                        <video
+                            className="w-full md:hidden"
+                            controls
+                            controlsList="nodownload"
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            onLoadedData={(e) => { (e.target as HTMLVideoElement).playbackRate = 2; }}
+                            onPlay={(e) => { (e.target as HTMLVideoElement).playbackRate = 2; }}
+                        >
+                            <source src="/demo.mp4" type="video/mp4" />
+                        </video>
+
+                        {/* Custom controls (desktop only) */}
+                        <div className="hidden md:flex px-4 py-2 bg-zinc-900/80 border-t border-white/5 items-center gap-3">
                             <button onClick={togglePlay} className="text-zinc-400 hover:text-white transition-colors">
                                 {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                             </button>

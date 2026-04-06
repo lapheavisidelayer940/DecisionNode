@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
-import { Github } from 'lucide-react';
+import { Github, Star } from 'lucide-react';
+import { useGitHubStars } from '../hooks/useGitHubStars';
 
 import logo from '../assets/images/DecisionNode-transparent.png';
 
 export default function Footer() {
+    const stars = useGitHubStars();
     return (
         <footer className="border-t border-white/10 mt-20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -28,8 +30,14 @@ export default function Footer() {
                             that your AI assistant uses to remember decisions.
                         </p>
                         <div className="flex gap-4 mt-4">
-                            <a href="https://github.com/decisionnode/decisionnode" target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-white transition-colors">
-                                <Github className="w-5 h-5" />
+                            <a href="https://github.com/decisionnode/decisionnode" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors px-3 py-1.5 rounded-full border border-white/5 hover:border-white/10 bg-white/5 hover:bg-white/10">
+                                <Github className="w-4 h-4" />
+                                {stars !== null && (
+                                    <span className="flex items-center gap-1 text-xs font-medium">
+                                        <Star className="w-3 h-3 text-yellow-500" />
+                                        {stars}
+                                    </span>
+                                )}
                             </a>
                         </div>
                     </div>

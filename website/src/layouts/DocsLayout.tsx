@@ -157,7 +157,7 @@ export default function DocsLayout() {
                             <span className="text-sm font-bold tracking-tight text-white group-hover:text-primary-400 transition-colors">
                                 <span className="text-primary-400">Decision</span><span className="text-yellow-500">Node</span>
                             </span>
-                            <span className="hidden sm:inline text-xs font-semibold px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">
                                 Docs
                             </span>
                         </Link>
@@ -172,7 +172,7 @@ export default function DocsLayout() {
                         <a href="https://github.com/decisionnode/DecisionNode" target="_blank" rel="noopener" className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg border border-white/5 hover:border-white/10 bg-white/5 hover:bg-white/10">
                             <Github className="w-4 h-4" />
                             {stars !== null && (
-                                <span className="hidden sm:flex items-center gap-1 text-xs font-medium">
+                                <span className="flex items-center gap-1 text-xs font-medium">
                                     <Star className="w-3 h-3 text-yellow-500" />
                                     {stars}
                                 </span>

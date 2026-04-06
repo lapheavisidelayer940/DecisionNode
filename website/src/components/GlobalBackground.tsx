@@ -26,15 +26,15 @@ export default function GlobalBackground() {
 
     return (
         <>
-            {/* Interactive Mouse Glow */}
+            {/* Interactive Mouse Glow (desktop only) */}
             <div
-                className="fixed inset-0 pointer-events-none z-0 transition-opacity duration-1000"
+                className="fixed inset-0 pointer-events-none z-0 transition-opacity duration-1000 hidden md:block"
                 style={{
                     background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(56, 189, 248, 0.12), transparent 80%)`
                 }}
             />
-            {/* Parallax Background Blobs - Vivid & Moving */}
-            <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+            {/* Parallax Background Blobs (desktop only — too heavy on mobile) */}
+            <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden hidden md:block">
                 {/* 1. Cyan Blob - Slow, follows scroll slightly */}
                 <div
                     className="absolute top-[-10%] left-[-10%] w-[70vw] h-[70vw] rounded-full blur-[120px] opacity-30 mix-blend-screen"
@@ -65,7 +65,7 @@ export default function GlobalBackground() {
 
             {/* Moving Hills/Waves - ONLY ON HOME PAGE */}
             {isHome && (
-                <div className="fixed bottom-0 left-0 right-0 h-[45vh] pointer-events-none z-0 overflow-hidden">
+                <div className="fixed bottom-0 left-0 right-0 h-[45vh] pointer-events-none z-0 overflow-hidden hidden md:block">
                     {/* Perspective gradient fade */}
                     <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent z-10" />
 

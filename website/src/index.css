@@ -62,7 +62,7 @@ body {
 /* Premium "Glass" Card */
 @layer components {
     .bento-card {
-        @apply bg-zinc-950/40 border border-white/5 rounded-xl overflow-hidden backdrop-blur-md transition-all duration-500;
+        @apply bg-zinc-950/40 border border-white/5 rounded-xl overflow-hidden md:backdrop-blur-md transition-all duration-500;
         box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.03);
         position: relative;
     }
