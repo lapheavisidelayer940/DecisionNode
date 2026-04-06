@@ -4,6 +4,7 @@
 
 - **Per-decision history diffs** — View what changed between versions of a decision, field by field
 - **Per-project config** — `~/.decisionnode/projects/{name}/config.json` for project-specific threshold and agent behavior overrides
+- **Re-record terminal recordings** — Remove `cd demo-project` from the beginning of all VHS tapes so recordings start directly with the command
 
 ## Planned
 
