@@ -2,6 +2,14 @@
 
 All notable changes to DecisionNode are documented here.
 
+## [0.5.1] - 2026-04-08
+
+### Added
+- `glama.json` for Glama MCP registry listing
+
+### Changed
+- Updated README subtitle with cross-tool compatibility messaging
+
 ## [0.5.0] - 2026-04-06
 
 ### Added

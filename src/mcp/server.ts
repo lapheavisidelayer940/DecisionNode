@@ -20,7 +20,7 @@ import { getProjectRoot, getCurrentProject, setCurrentProject, GLOBAL_STORE, isG
 const server = new Server(
     {
         name: 'decisionnode',
-        version: '0.5.0',
+        version: '0.5.1',
     },
     {
         capabilities: {
