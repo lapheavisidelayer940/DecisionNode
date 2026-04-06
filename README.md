@@ -70,30 +70,63 @@ decide embed                        # fix missing embeddings
 decide export json > decisions.json # export to file
 ```
 
-## Features in action
+## Features
 
-### History tracking
-Every change is logged with the source — `cli` for terminal, or the MCP client name (`claude-code`, `cursor`, etc.).
+<details>
+<summary><strong>History tracking</strong> — full audit trail with source tracking</summary>
+<br/>
+Every add, edit, deprecation, and delete is logged. The history shows which tool made each change — <code>cli</code> for terminal commands, or the MCP client name (<code>claude-code</code>, <code>cursor</code>, <code>windsurf</code>) for AI-initiated changes.
 
 <img src="website/public/recordings/history.gif" alt="decide history" width="700" />
+</details>
 
-### Conflict detection
+<details>
+<summary><strong>Conflict detection</strong> — catch duplicates before they're saved</summary>
+<br/>
+When adding a decision, existing decisions are checked at 75% similarity. The CLI warns you and asks to confirm. The MCP server returns the conflicts so the AI can decide whether to update, deprecate, or force-add.
+
 <img src="website/public/recordings/conflict.gif" alt="conflict detection" width="700" />
+</details>
 
-### Deprecate / Activate
+<details>
+<summary><strong>Deprecate / Activate</strong> — soft-delete without losing embeddings</summary>
+<br/>
+Deprecated decisions are hidden from search but their embeddings are preserved. Reactivate them later and they're immediately searchable again — no re-embedding needed.
+
 <img src="website/public/recordings/deprecate.gif" alt="deprecate and activate" width="700" />
+</details>
 
-### Global decisions
+<details>
+<summary><strong>Global decisions</strong> — shared across all projects</summary>
+<br/>
+Decisions like "never commit .env files" or "always use TypeScript strict mode" can be marked as global. They're stored separately and automatically included in every project's search results.
+
 <img src="website/public/recordings/global.gif" alt="global decisions in search" width="700" />
+</details>
 
-### Agent behavior
+<details>
+<summary><strong>Agent behavior</strong> — control how aggressively the AI searches</summary>
+<br/>
+This setting changes the <code>search_decisions</code> tool description sent to the AI. <strong>Strict</strong> (default) tells the AI searching is mandatory before any code change. <strong>Relaxed</strong> lets the AI decide when searching is relevant.
+
 <img src="website/public/recordings/behavior.gif" alt="agent behavior strict vs relaxed" width="700" />
+</details>
 
-### Configurable threshold
+<details>
+<summary><strong>Configurable threshold</strong> — filter out weak matches</summary>
+<br/>
+Set the minimum similarity score (0.0–1.0) for search results. The default is 0.3. Raise it to reduce noise, lower it to surface more loosely related decisions. Applies to both CLI and MCP searches.
+
 <img src="website/public/recordings/threshold.gif" alt="configurable search threshold" width="700" />
+</details>
 
-### Embedding health
+<details>
+<summary><strong>Embedding health</strong> — check and fix missing vectors</summary>
+<br/>
+<code>decide check</code> shows which decisions are missing embeddings. <code>decide embed</code> generates them. <code>decide clean</code> removes orphaned vectors from deleted decisions.
+
 <img src="website/public/recordings/embed.gif" alt="decide check and decide embed" width="700" />
+</details>
 
 ## Documentation
 
