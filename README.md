@@ -17,6 +17,10 @@
 
 ---
 
+<p align="center">
+  <img src="website/public/demo.gif" alt="DecisionNode Demo" width="800" />
+</p>
+
 Your AI keeps forgetting what you agreed on. You say "use Tailwind, no CSS modules" — next session, it writes CSS modules. DecisionNode stores these decisions as vector embeddings so the AI can search them before writing code.
 
 Not a markdown file. A queryable memory layer with semantic search.

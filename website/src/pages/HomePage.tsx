@@ -1,12 +1,66 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Terminal, Code2, Sparkles, Copy, Check, Eye } from 'lucide-react';
+import { ArrowRight, Terminal, Code2, Sparkles, Copy, Check, Eye, Play, Pause, Maximize, RotateCcw } from 'lucide-react';
 
 import decisionNodeBlue from '../assets/images/DecisionNode-transparent-Blue.png';
 import decisionNodeYellow from '../assets/images/DecisionNode-transparent-Yellow.png';
 
 export default function HomePage() {
     const [copiedCommand, setCopiedCommand] = useState<string | null>(null);
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const [isPlaying, setIsPlaying] = useState(true);
+    const [progress, setProgress] = useState(0);
+    const [speed, setSpeed] = useState(2);
+
+    useEffect(() => {
+        const video = videoRef.current;
+        if (!video) return;
+        const onTimeUpdate = () => setProgress((video.currentTime / video.duration) * 100 || 0);
+        video.addEventListener('timeupdate', onTimeUpdate);
+        return () => video.removeEventListener('timeupdate', onTimeUpdate);
+    }, []);
+
+    function togglePlay() {
+        const v = videoRef.current;
+        if (!v) return;
+        if (v.paused) { v.play(); setIsPlaying(true); }
+        else { v.pause(); setIsPlaying(false); }
+    }
+
+    function cycleSpeed() {
+        const v = videoRef.current;
+        if (!v) return;
+        const speeds = [1, 1.5, 2, 3];
+        const next = speeds[(speeds.indexOf(speed) + 1) % speeds.length];
+        v.playbackRate = next;
+        setSpeed(next);
+    }
+
+    function seekVideo(e: React.MouseEvent<HTMLDivElement>) {
+        const v = videoRef.current;
+        if (!v) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const pct = (e.clientX - rect.left) / rect.width;
+        v.currentTime = pct * v.duration;
+    }
+
+    const playerRef = useRef<HTMLDivElement>(null);
+
+    function goFullscreen() {
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        } else {
+            playerRef.current?.requestFullscreen();
+        }
+    }
+
+    function restart() {
+        const v = videoRef.current;
+        if (!v) return;
+        v.currentTime = 0;
+        v.play();
+        setIsPlaying(true);
+    }
 
     function copyCommand(command: string) {
         navigator.clipboard.writeText(command);
@@ -53,22 +107,68 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* Video — uncomment when ready
+            {/* Demo video */}
             <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 mb-20 relative z-20">
-                <div className="rounded-2xl overflow-hidden border border-white/10 bg-zinc-900/30 backdrop-blur-md shadow-2xl aspect-video group cursor-pointer relative">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-primary-500/20 to-accent-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors z-10">
-                        <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center border border-white/10 backdrop-blur-sm group-hover:scale-110 transition-all duration-300 shadow-xl group-hover:bg-primary-500/10 group-hover:border-primary-500/30">
-                            <div className="w-0 h-0 border-t-[12px] border-t-transparent border-l-[20px] border-l-white border-b-[12px] border-b-transparent ml-1 group-hover:border-l-primary-400 transition-colors" />
+                <div ref={playerRef} className="rounded-2xl overflow-hidden border border-white/10 bg-zinc-900/50 backdrop-blur-md shadow-2xl relative group">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-primary-500/20 to-accent-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                    <div className="relative z-10">
+                        {/* Terminal title bar */}
+                        <div className="px-4 py-2 bg-zinc-900/80 border-b border-white/5 flex items-center gap-2">
+                            <div className="flex gap-1.5">
+                                <div className="w-3 h-3 rounded-full bg-red-500/70" />
+                                <div className="w-3 h-3 rounded-full bg-yellow-500/70" />
+                                <div className="w-3 h-3 rounded-full bg-green-500/70" />
+                            </div>
                         </div>
-                    </div>
-                    <div className="absolute bottom-0 inset-x-0 p-8 bg-gradient-to-t from-black via-black/60 to-transparent z-10">
-                        <h3 className="text-2xl font-bold text-white mb-2">See it in action</h3>
-                        <p className="text-zinc-400">A decision is made, embedded, and retrieved in a later session.</p>
+
+                        {/* Video (no native controls) */}
+                        <video
+                            ref={videoRef}
+                            className="w-full cursor-pointer"
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            onClick={togglePlay}
+                            onLoadedData={(e) => { (e.target as HTMLVideoElement).playbackRate = 2; }}
+                        >
+                            <source src="/demo.mp4" type="video/mp4" />
+                        </video>
+
+                        {/* Custom controls */}
+                        <div className="px-4 py-2 bg-zinc-900/80 border-t border-white/5 flex items-center gap-3">
+                            <button onClick={togglePlay} className="text-zinc-400 hover:text-white transition-colors">
+                                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                            </button>
+                            <button onClick={restart} className="text-zinc-400 hover:text-white transition-colors">
+                                <RotateCcw className="w-3.5 h-3.5" />
+                            </button>
+
+                            {/* Progress bar */}
+                            <div className="flex-1 h-1 bg-zinc-700 rounded-full cursor-pointer group" onClick={seekVideo}>
+                                <div
+                                    className="h-full bg-primary-500 rounded-full relative transition-all"
+                                    style={{ width: `${progress}%` }}
+                                >
+                                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                                </div>
+                            </div>
+
+                            {/* Speed button */}
+                            <button
+                                onClick={cycleSpeed}
+                                className="text-xs font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors"
+                            >
+                                {speed}x
+                            </button>
+
+                            <button onClick={goFullscreen} className="text-zinc-400 hover:text-white transition-colors">
+                                <Maximize className="w-3.5 h-3.5" />
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>
-            */}
 
             {/* How it works — the actual flow */}
             <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-b border-white/5 relative z-10">
