@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" />
   <img src="https://img.shields.io/npm/v/decisionnode.svg" alt="npm version" />
   <img src="https://github.com/decisionnode/DecisionNode/actions/workflows/ci.yml/badge.svg" alt="CI" />
-  <a href="https://glama.ai/mcp/servers/decisionnode/DecisionNode"><img src="https://glama.ai/mcp/servers/decisionnode/DecisionNode/badges/score.svg" alt="Glama" /></a>
+  <a href="https://glama.ai/mcp/servers/decisionnode/DecisionNode"><img src="https://glama.ai/mcp/servers/decisionnode/DecisionNode/badges/score.svg?v=1" alt="Glama" /></a>
 </p>
 
 ---
