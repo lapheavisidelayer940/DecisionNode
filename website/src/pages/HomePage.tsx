@@ -90,8 +90,8 @@ export default function HomePage() {
                     </h1>
 
                     <p className="text-lg md:text-xl text-zinc-400 max-w-3xl mx-auto mb-10 leading-relaxed">
-                        Record a decision, embed it as a vector, search it later.
-                        Works from the CLI or through your AI via MCP.
+                        Record a decision, embed it as a vector, search it later.<br />
+                        One store shared across all your AI tools: Claude Code, Cursor, Windsurf, and any MCP client.
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
