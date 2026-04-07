@@ -1,7 +1,7 @@
 {
   "name": "decisionnode",
   "version": "0.5.1",
-  "description": "Record a decision, embed it as a vector, search it later. CLI + MCP server for AI tools.",
+  "description": "Record structured decisions once, search them from all your AI coding tools — a shared structured semantic memory store across Claude Code, Cursor, Windsurf, Antigravity, and every MCP client.",
   "keywords": [
     "decisions",
     "mcp",
@@ -54,6 +54,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.19.27",
+    "sharp": "^0.34.5",
     "typescript": "^5.3.3",
     "vitest": "^4.1.2"
   }

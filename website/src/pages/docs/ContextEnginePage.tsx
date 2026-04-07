@@ -1,9 +1,16 @@
 import { Database, Brain, Zap } from 'lucide-react';
 import { Section, ListItem, CodeBlock } from '../../components/docs/DocsComponents';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 export default function ContextEnginePage() {
     return (
+        <>
+        <Helmet>
+            <title>Context Engine — DecisionNode Docs</title>
+            <meta name="description" content="How DecisionNode's context engine works — vector embeddings, semantic search, and intelligent retrieval." />
+            <link rel="canonical" href="https://decisionnode.dev/docs/context" />
+        </Helmet>
         <div className="animate-fade-in max-w-4xl mx-auto pb-20">
             <div className="flex items-center gap-2 text-sm text-zinc-500 mb-8 font-mono">
                 <Link to="/docs" className="hover:text-primary-400 transition-colors">Docs</Link>
@@ -128,5 +135,6 @@ decide clean
                 </div>
             </Section>
         </div>
+        </>
     );
 }

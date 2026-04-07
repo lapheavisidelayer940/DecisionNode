@@ -3,16 +3,20 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-google-48.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description"
-    content="Store development decisions as vector embeddings, query them via semantic search. CLI + MCP server for AI agents." />
-  <meta name="keywords" content="decisionnode, mcp, ai, decisions, embeddings, semantic search, cli, developer tools" />
+    content="Record structured decisions once, search them from all your AI coding tools — a shared structured memory store across Claude Code, Cursor, Windsurf, Antigravity, and every MCP client." />
+  <meta name="keywords"
+    content="decisionnode, mcp, ai, decisions, embeddings, semantic search, cli, developer tools, claude code, cursor, windsurf, memory" />
   <meta name="author" content="DecisionNode" />
 
   <!-- Open Graph -->
   <meta property="og:title" content="DecisionNode" />
-  <meta property="og:description" content="Store development decisions as vector embeddings, query them via semantic search. CLI + MCP server for AI agents." />
+  <meta property="og:description"
+    content="Record structured decisions once, search them from all your AI coding tools — a shared structured memory store across Claude Code, Cursor, Windsurf, Antigravity, and every MCP client." />
   <meta property="og:url" content="https://decisionnode.dev" />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://decisionnode.dev/og-image.png" />
@@ -20,7 +24,8 @@
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="DecisionNode" />
-  <meta name="twitter:description" content="Store development decisions as vector embeddings, query them via semantic search. CLI + MCP server for AI agents." />
+  <meta name="twitter:description"
+    content="Record structured decisions once, search them from all your AI coding tools — a shared structured memory store across Claude Code, Cursor, Windsurf, Antigravity, and every MCP client." />
   <meta name="twitter:image" content="https://decisionnode.dev/og-image.png" />
 
   <link rel="canonical" href="https://decisionnode.dev" />
@@ -29,27 +34,59 @@
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "DecisionNode",
-      "description": "Store development decisions as vector embeddings, query them via semantic search. CLI + MCP server for AI agents.",
-      "url": "https://decisionnode.dev",
-      "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "Windows, macOS, Linux",
-      "license": "https://opensource.org/licenses/MIT",
-      "isAccessibleForFree": true,
-      "installUrl": "https://www.npmjs.com/package/decisionnode",
-      "codeRepository": "https://github.com/decisionnode/decisionnode",
-      "programmingLanguage": "TypeScript",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "author": {
-        "@type": "Organization",
-        "name": "DecisionNode",
-        "url": "https://github.com/decisionnode"
-      }
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://decisionnode.dev/#website",
+          "name": "DecisionNode",
+          "url": "https://decisionnode.dev",
+          "description": "Record structured decisions once, search them from all your AI coding tools — a shared structured memory store across Claude Code, Cursor, Windsurf, Antigravity, and every MCP client."
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://decisionnode.dev/#app",
+          "name": "DecisionNode",
+          "description": "Record structured decisions once, search them from all your AI coding tools — a shared structured memory store across Claude Code, Cursor, Windsurf, Antigravity, and every MCP client.",
+          "url": "https://decisionnode.dev",
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Windows, macOS, Linux",
+          "license": "https://opensource.org/licenses/MIT",
+          "isAccessibleForFree": true,
+          "installUrl": "https://www.npmjs.com/package/decisionnode",
+          "codeRepository": "https://github.com/decisionnode/decisionnode",
+          "programmingLanguage": "TypeScript",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "author": {
+            "@type": "Organization",
+            "name": "DecisionNode",
+            "url": "https://github.com/decisionnode"
+          }
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "name": "Documentation",
+          "url": "https://decisionnode.dev/docs"
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "name": "Quickstart",
+          "url": "https://decisionnode.dev/docs/quickstart"
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "name": "CLI Reference",
+          "url": "https://decisionnode.dev/docs/cli"
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "name": "MCP Server",
+          "url": "https://decisionnode.dev/docs/mcp"
+        }
+      ]
     }
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">

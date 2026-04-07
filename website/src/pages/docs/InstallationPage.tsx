@@ -1,9 +1,16 @@
 import { Shield, AlertTriangle } from 'lucide-react';
 import { Section, CodeBlock, Tip } from '../../components/docs/DocsComponents';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 export default function InstallationPage() {
     return (
+        <>
+        <Helmet>
+            <title>Installation — DecisionNode Docs</title>
+            <meta name="description" content="Install DecisionNode via npm — system requirements, platform support, and troubleshooting." />
+            <link rel="canonical" href="https://decisionnode.dev/docs/installation" />
+        </Helmet>
         <div className="animate-fade-in max-w-4xl mx-auto pb-20">
             <div className="flex items-center gap-2 text-sm text-zinc-500 mb-8 font-mono">
                 <Link to="/docs" className="hover:text-primary-400 transition-colors">Docs</Link>
@@ -80,5 +87,6 @@ export default function InstallationPage() {
                 <CodeBlock code="Set-ExecutionPolicy RemoteSigned -Scope CurrentUser" />
             </Section>
         </div>
+        </>
     );
 }

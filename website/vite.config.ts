@@ -6,5 +6,8 @@ export default defineConfig({
     server: {
         port: 5120,
         open: true
+    },
+    ssr: {
+        noExternal: ['react-helmet-async']
     }
 })

@@ -5,7 +5,7 @@
 <h1 align="center">DecisionNode</h1>
 
 <p align="center">
-  One store shared across all your AI tools: Claude Code, Cursor, Windsurf, and any MCP client.
+  Record structured decisions once, search them from all your AI coding tools — a shared structured memory store across Claude Code, Cursor, Windsurf, Antigravity, and every MCP client.
 </p>
 
 <p align="center">
@@ -21,8 +21,6 @@
   <img src="website/public/recordings/demo.gif" alt="DecisionNode Demo" width="800" />
 </p>
 
-Record a decision, embed it as a vector, search it later. One store shared across all your AI tools: Claude Code, Cursor, Windsurf, and any MCP client.
-
 Not a markdown file — structured decisions with semantic search, exposed over MCP.
 
 ## Install
@@ -37,13 +35,31 @@ decide setup     # configure Gemini API key (free tier)
 claude mcp add decisionnode -s user decide-mcp
 ```
 
+## What a decision looks like
+
+```json
+{
+  "id": "backend-007",
+  "scope": "Backend",
+  "decision": "Skipped connection pooling for the embeddings DB — single writer, revisit if we add a sync daemon",
+  "status": "active",
+  "rationale": "Only one process writes at a time in the current architecture. Pooling added complexity with no measurable benefit. If we add a background sync process this will need to change.",
+  "constraints": [
+    "Do not add concurrent writers without revisiting this first"
+  ],
+  "createdAt": "2024-11-14T09:22:00Z"
+}
+```
+Stored as JSON, embedded as a vector, searchable by meaning.
+Decisions are not exactly "Rules" that the AI should have in it's context window the entire time (those are better suited for CLAUDE.md or memory.md). Decisions are thought of to be more like "Memories" that the AI can pull in when it's actually relevant through semantic search. 
+
 ## How it works
 
 1. **A decision is made** — via `decide add` or the AI calls `add_decision` through MCP
 2. **Embedded as a vector** — using Gemini's `gemini-embedding-001`, stored locally in `vectors.json`
 3. **AI retrieves it later** — calls `search_decisions` via MCP, gets back relevant decisions ranked by cosine similarity
 
-The retrieval is explicit — the AI calls the MCP tool to search. Decisions are not injected into a system prompt.
+The retrieval is explicit — the AI calls search decisions tool via MCP passing a query and getting back the top N decisions ranked by cosine similarity. Nothing is pre-injected into the system prompt.
 
 ## Two interfaces
 
@@ -59,9 +75,9 @@ Both read and write to the same local store (`~/.decisionnode/`).
 
 ```bash
 decide add                          # interactive add
-decide add -s UI -d "Use Tailwind"  # one-command add
+decide add -s Backend -d "Skipped connection pooling for the embeddings DB — single writer, revisit if we add a sync daemon"
 decide add --global                 # applies to all projects
-decide search "error handling"      # semantic search
+decide search "connection pooling"  # semantic search
 decide list                         # list all (includes global)
 decide deprecate ui-003             # soft-delete (reversible)
 decide activate ui-003              # bring it back

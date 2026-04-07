@@ -1,8 +1,15 @@
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Lock, Database, Shield } from 'lucide-react';
 
 export default function PrivacyPage() {
     return (
+        <>
+        <Helmet>
+            <title>Privacy Policy — DecisionNode</title>
+            <meta name="description" content="DecisionNode privacy policy — how we handle your data and protect your privacy." />
+            <link rel="canonical" href="https://decisionnode.dev/privacy" />
+        </Helmet>
         <div className="min-h-screen pt-24 pb-20 relative">
             <div className="fixed inset-0 bg-grid-fade pointer-events-none" />
 
@@ -74,5 +81,6 @@ export default function PrivacyPage() {
                 </div>
             </div>
         </div>
+        </>
     );
 }

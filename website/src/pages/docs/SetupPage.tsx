@@ -1,8 +1,15 @@
 import { Section, CodeBlock } from '../../components/docs/DocsComponents';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 export default function SetupPage() {
     return (
+        <>
+        <Helmet>
+            <title>Setup & Configuration — DecisionNode Docs</title>
+            <meta name="description" content="Configure DecisionNode for Claude Code, Cursor, Windsurf, Antigravity, and other MCP clients." />
+            <link rel="canonical" href="https://decisionnode.dev/docs/setup" />
+        </Helmet>
         <div className="animate-fade-in max-w-4xl mx-auto pb-20">
             <div className="flex items-center gap-2 text-sm text-zinc-500 mb-8 font-mono">
                 <Link to="/docs" className="hover:text-primary-400 transition-colors">Docs</Link>
@@ -99,5 +106,6 @@ decide config search-threshold 0.2       # More permissive`} />
                 </div>
             </Section>
         </div>
+        </>
     );
 }

@@ -1,9 +1,16 @@
 import { FileJson, Tag, CheckCircle } from 'lucide-react';
 import { Section, CodeBlock, ListItem } from '../../components/docs/DocsComponents';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 export default function DecisionNodesPage() {
     return (
+        <>
+        <Helmet>
+            <title>Decision Nodes — DecisionNode Docs</title>
+            <meta name="description" content="Learn about decision nodes — how to record, tag, and search architectural decisions with vector embeddings." />
+            <link rel="canonical" href="https://decisionnode.dev/docs/decisions" />
+        </Helmet>
         <div className="animate-fade-in max-w-4xl mx-auto pb-20">
             <div className="flex items-center gap-2 text-sm text-zinc-500 mb-8 font-mono">
                 <Link to="/docs" className="hover:text-primary-400 transition-colors">Docs</Link>
@@ -120,5 +127,6 @@ decide activate ui-001`} />
                 </div>
             </Section>
         </div>
+        </>
     );
 }

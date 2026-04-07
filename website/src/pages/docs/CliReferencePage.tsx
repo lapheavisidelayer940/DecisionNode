@@ -1,5 +1,6 @@
 import { Section, CodeBlock } from '../../components/docs/DocsComponents';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 export default function CliReferencePage() {
     const coreCommands = [
@@ -105,6 +106,12 @@ export default function CliReferencePage() {
     ];
 
     return (
+        <>
+        <Helmet>
+            <title>CLI Reference — DecisionNode Docs</title>
+            <meta name="description" content="DecisionNode CLI command reference — all available commands, flags, and usage examples." />
+            <link rel="canonical" href="https://decisionnode.dev/docs/cli" />
+        </Helmet>
         <div className="animate-fade-in max-w-4xl mx-auto pb-20">
             <div className="flex items-center gap-2 text-sm text-zinc-500 mb-8 font-mono">
                 <Link to="/docs" className="hover:text-primary-400 transition-colors">Docs</Link>
@@ -205,5 +212,6 @@ decide embed`} />
                 </div>
             </Section>
         </div>
+        </>
     );
 }

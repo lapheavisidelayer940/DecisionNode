@@ -6,10 +6,17 @@ import {
     Github
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Section, Tabs, Card, CardGroup, CodeBlock } from '../../components/docs/DocsComponents';
 
 export default function DocsIntroduction() {
     return (
+        <>
+        <Helmet>
+            <title>Documentation — DecisionNode</title>
+            <meta name="description" content="DecisionNode documentation — learn how to record structured decisions and search them semantically across all your AI coding tools." />
+            <link rel="canonical" href="https://decisionnode.dev/docs" />
+        </Helmet>
         <div className="animate-fade-in max-w-4xl mx-auto pb-20">
             <div className="flex items-center gap-2 text-sm text-zinc-500 mb-8 font-mono">
                 <Link to="/docs" className="hover:text-primary-400 transition-colors">Docs</Link>
@@ -20,7 +27,7 @@ export default function DocsIntroduction() {
             <div className="mb-12">
                 <h1 className="text-4xl font-bold text-white mb-6">Introduction</h1>
                 <p className="text-xl text-zinc-400 leading-relaxed border-l-2 border-primary-500/50 pl-6">
-                    Record a decision, embed it as a vector, search it later. Works from the CLI or through your AI via MCP. One decision layer for all your AI tools.
+                    Record structured decisions once, search them from all your AI coding tools — a shared structured memory store across Claude Code, Cursor, Windsurf, Antigravity, and every MCP client.
                 </p>
             </div>
 
@@ -42,7 +49,7 @@ export default function DocsIntroduction() {
             <Section title="What DecisionNode does" id="what-it-does">
                 <div className="space-y-4 text-zinc-400">
                     <p>
-                        DecisionNode stores decisions as structured JSON objects, embeds them as vectors, and exposes them over MCP so any compatible tool can search them. The same decisions are accessible from Claude Code, Cursor, Windsurf, or any other MCP client.
+                        DecisionNode stores decisions as structured JSON objects, embeds them as vectors, and exposes them over MCP so any compatible tool can search them. The same decisions are accessible from Claude Code, Cursor, Windsurf, Antigravity, or any other MCP client.
                     </p>
                     <p>
                         Retrieval is <strong className="text-zinc-200">explicit</strong> — the AI calls <code>search_decisions</code> through MCP when it needs context. Only the relevant matches come back, ranked by cosine similarity. Nothing gets injected into the prompt blindly.
@@ -172,5 +179,6 @@ export default function DocsIntroduction() {
                 </CardGroup>
             </Section>
         </div>
+        </>
     );
 }

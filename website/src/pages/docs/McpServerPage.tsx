@@ -1,6 +1,7 @@
 import { Box } from 'lucide-react';
 import { Section, CodeBlock } from '../../components/docs/DocsComponents';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 export default function McpServerPage() {
     const tools = [
@@ -52,6 +53,12 @@ export default function McpServerPage() {
     ];
 
     return (
+        <>
+        <Helmet>
+            <title>MCP Server — DecisionNode Docs</title>
+            <meta name="description" content="DecisionNode MCP server setup — connect your AI coding tools via the Model Context Protocol." />
+            <link rel="canonical" href="https://decisionnode.dev/docs/mcp" />
+        </Helmet>
         <div className="animate-fade-in max-w-4xl mx-auto pb-20">
             <div className="flex items-center gap-2 text-sm text-zinc-500 mb-8 font-mono">
                 <Link to="/docs" className="hover:text-primary-400 transition-colors">Docs</Link>
@@ -310,5 +317,6 @@ export default function McpServerPage() {
                 </div>
             </Section>
         </div>
+        </>
     );
 }

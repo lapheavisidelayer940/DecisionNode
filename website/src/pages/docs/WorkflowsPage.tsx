@@ -1,8 +1,15 @@
 import { Section, Steps, Step, CodeBlock } from '../../components/docs/DocsComponents';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 export default function WorkflowsPage() {
     return (
+        <>
+        <Helmet>
+            <title>Workflows — DecisionNode Docs</title>
+            <meta name="description" content="DecisionNode workflow examples — real-world patterns for recording and retrieving decisions across AI tools." />
+            <link rel="canonical" href="https://decisionnode.dev/docs/workflows" />
+        </Helmet>
         <div className="animate-fade-in max-w-4xl mx-auto pb-20">
             <div className="flex items-center gap-2 text-sm text-zinc-500 mb-8 font-mono">
                 <Link to="/docs" className="hover:text-primary-400 transition-colors">Docs</Link>
@@ -143,5 +150,6 @@ decide clean`} />
                 </div>
             </Section>
         </div>
+        </>
     );
 }

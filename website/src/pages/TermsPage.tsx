@@ -1,8 +1,15 @@
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Scale, FileText, Shield } from 'lucide-react';
 
 export default function TermsPage() {
     return (
+        <>
+        <Helmet>
+            <title>Terms of Service — DecisionNode</title>
+            <meta name="description" content="DecisionNode terms of service — usage terms for the decision memory platform." />
+            <link rel="canonical" href="https://decisionnode.dev/terms" />
+        </Helmet>
         <div className="min-h-screen pt-24 pb-20 relative">
             <div className="fixed inset-0 bg-grid-fade pointer-events-none" />
 
@@ -69,5 +76,6 @@ export default function TermsPage() {
                 </div>
             </div>
         </div>
+        </>
     );
 }
