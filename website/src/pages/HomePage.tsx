@@ -441,7 +441,7 @@ export default function HomePage() {
                 <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-b border-white/5 relative z-10">
                     <h2 className="text-2xl font-bold text-white mb-3 text-center">Two interfaces, one store</h2>
                     <p className="text-zinc-500 text-center mb-12 max-w-2xl mx-auto">
-                        The CLI is for you. The MCP server is for your AI. Both read and write to the same local data.
+                        The CLI is for you and your AI. The MCP server is for your AI and you. Both read and write to the same local data.
                     </p>
 
                     <div className="grid md:grid-cols-2 gap-6">

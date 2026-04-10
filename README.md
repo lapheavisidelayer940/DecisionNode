@@ -65,7 +65,7 @@ The retrieval is explicit — the AI calls search decisions tool via MCP passing
 
 | | CLI (`decide`) | MCP Server (`decide-mcp`) |
 |---|---|---|
-| **For** | You | Your AI |
+| **For** | You (and your AI) | Your AI (and you) |
 | **How** | Terminal commands | Structured JSON over MCP |
 | **Does** | Setup, add, search, edit, deprecate, export, import, config | Search, add, update, delete, list, history |
 

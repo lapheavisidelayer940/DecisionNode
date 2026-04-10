@@ -14,8 +14,8 @@ The same decision store is accessible from any MCP-compatible tool (Claude Code,
 
 | Interface | For | How |
 |-----------|-----|-----|
-| **CLI** (`decide` / `decisionnode`) | You | Terminal commands, interactive prompts or inline flags |
-| **MCP Server** (`decide-mcp`) | Your AI | Structured JSON over MCP, launched automatically by AI clients |
+| **CLI** (`decide` / `decisionnode`) | You and your AI | Terminal commands, interactive prompts or inline flags |
+| **MCP Server** (`decide-mcp`) | Your AI and you | Structured JSON over MCP, launched automatically by AI clients |
 
 Both read and write to the same local store at `~/.decisionnode/`.
 
@@ -174,7 +174,7 @@ A decision is a scoped JSON object:
 |--------|-----------|-----------|---------------|
 | `active` | Yes | Preserved | Default state |
 | `deprecated` | No | Preserved | `decide deprecate <id>` or `update_decision(status="deprecated")` |
-| (deleted) | N/A | Removed | `decide delete <id>` or `delete_decision(id)` |
+| (deleted) | N/A | Removed | `decide delete <id> [-f]` or `delete_decision(id)` |
 
 Re-activate a deprecated decision: `decide activate <id>` — immediately searchable again.
 
@@ -284,11 +284,11 @@ All commands work with both `decide` and `decisionnode`.
 | `decide list --global` | List only global decisions |
 | `decide get <id>` | View full details (supports `global:` prefix) |
 | `decide search "<query>"` | Semantic search (active only, includes global) |
-| `decide edit <id>` | Edit decision fields (supports `global:` prefix) |
+| `decide edit <id> [-f]` | Edit decision fields (supports `global:` prefix, use `-f` to skip global confirmation) |
 | `decide deprecate <id>` | Hide from search, keep embedding |
 | `decide activate <id>` | Re-activate, immediately searchable |
-| `decide delete <id>` | Permanently delete decision + embedding |
-| `decide delete-scope <scope>` | Delete entire scope |
+| `decide delete <id> [-f]` | Permanently delete decision + embedding (use `-f` to skip confirmation) |
+| `decide delete-scope <scope> [-f]` | Delete entire scope (use `-f` to skip confirmation) |
 
 ### Data & Maintenance
 

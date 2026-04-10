@@ -103,11 +103,11 @@ export default function DocsIntroduction() {
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                         <div className="bg-zinc-900/50 p-5 rounded-lg border border-zinc-800">
-                            <p className="text-zinc-200 font-semibold mb-2">CLI — for you</p>
+                            <p className="text-zinc-200 font-semibold mb-2">CLI — for you and your AI</p>
                             <p className="text-sm">The <code>decide</code> command. Use it to set up projects, add decisions, search, export/import, check embedding health, and configure settings. Supports interactive prompts or <Link to="/docs/cli#core-commands" className="text-primary-400 hover:underline">one-command inline flags</Link>.</p>
                         </div>
                         <div className="bg-zinc-900/50 p-5 rounded-lg border border-zinc-800">
-                            <p className="text-zinc-200 font-semibold mb-2">MCP server — for your AI</p>
+                            <p className="text-zinc-200 font-semibold mb-2">MCP server — for your AI and you</p>
                             <p className="text-sm">The <code>decide-mcp</code> binary. Connect it once (e.g. <code>claude mcp add decisionnode -s user decide-mcp</code> for Claude Code) and the AI calls tools like <code>search_decisions</code> and <code>add_decision</code> over <a href="https://modelcontextprotocol.io" className="text-primary-400 hover:underline" target="_blank" rel="noopener noreferrer">MCP</a>. Works with Claude Code, Cursor, Windsurf, Antigravity, or any MCP-compliant tool.</p>
                         </div>
                     </div>

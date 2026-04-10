@@ -309,6 +309,16 @@ export default function DocsLayout() {
                                         decisionnode-docs.md
                                         <ExternalLink className="w-3 h-3 ml-auto opacity-50" />
                                     </a>
+                                    <a
+                                        href="/decisionnode-cli.md"
+                                        target="_blank"
+                                        rel="noopener"
+                                        className="flex items-center gap-2 px-3 py-2.5 lg:py-2 rounded-md text-sm font-medium transition-colors border-l-2 border-transparent text-zinc-400 hover:text-zinc-200 hover:border-zinc-700"
+                                    >
+                                        <Terminal className="w-4 h-4" />
+                                        decisionnode-cli.md
+                                        <ExternalLink className="w-3 h-3 ml-auto opacity-50" />
+                                    </a>
                                 </div>
                             </div>
                         </nav>

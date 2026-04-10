@@ -291,7 +291,7 @@ async function handleSearch() {
             return;
         }
 
-        console.log(`\n  ${c.bold}${c.white}Results for:${c.reset} ${c.dim}"${query}"${c.reset}\n`);
+        console.log('');
 
         for (const result of results) {
             const score = (result.score * 100).toFixed(0);
@@ -513,7 +513,9 @@ async function handleEdit() {
         return;
     }
 
-    if (global) {
+    const force = args.includes('--force') || args.includes('-f');
+
+    if (global && !force) {
         console.log(`\n  ${c.yellow}!${c.reset} This is a global decision that affects ${c.bold}all projects${c.reset}.`);
         const confirm = await prompt(`  Continue editing? ${c.dim}(y/N):${c.reset} `);
         if (confirm.trim().toLowerCase() !== 'y') {
@@ -572,10 +574,14 @@ async function handleDelete() {
         console.log(`  ${c.yellow}!${c.reset} This is a global decision that affects ${c.bold}all projects${c.reset}.`);
     }
 
-    const confirm = await prompt(`  Type ${c.bold}"yes"${c.reset} to confirm: `);
-    if (confirm.trim().toLowerCase() !== 'yes') {
-        console.log(`  ${c.dim}Cancelled.${c.reset}\n`);
-        return;
+    const force = args.includes('--force') || args.includes('-f');
+
+    if (!force) {
+        const confirm = await prompt(`  Type ${c.bold}"yes"${c.reset} to confirm: `);
+        if (confirm.trim().toLowerCase() !== 'yes') {
+            console.log(`  ${c.dim}Cancelled.${c.reset}\n`);
+            return;
+        }
     }
 
     if (global) {
@@ -591,12 +597,14 @@ async function handleDelete() {
             // Ignore clean errors during delete flow
         }
 
-        const renumber = await prompt('Renumber remaining decisions? (y/n): ');
-        if (renumber.trim().toLowerCase() === 'y') {
-            const renames = await renumberDecisions(decision.scope);
-            if (renames.length > 0) {
-                console.log('\nRenumbered:');
-                renames.forEach(r => console.log(`   ${r}`));
+        if (!force) {
+            const renumber = await prompt('Renumber remaining decisions? (y/n): ');
+            if (renumber.trim().toLowerCase() === 'y') {
+                const renames = await renumberDecisions(decision.scope);
+                if (renames.length > 0) {
+                    console.log('\nRenumbered:');
+                    renames.forEach(r => console.log(`   ${r}`));
+                }
             }
         }
     }
@@ -688,15 +696,19 @@ async function handleDeleteScope() {
     }
 
     const decisions = await listDecisions(normalizedInput);
+    const force = args.includes('--force') || args.includes('-f');
+
     console.log(`\n  ${c.red}${c.bold}Delete scope${c.reset} ${c.cyan}${normalizedInput}${c.reset} ${c.dim}(${decisions.length} decisions)${c.reset}\n`);
     decisions.forEach(d => console.log(`    ${c.dim}─${c.reset} ${c.cyan}${d.id}${c.reset}  ${d.decision.substring(0, 50)}`));
 
-    console.log(`\n  ${c.yellow}!${c.reset} This cannot be undone.`);
-    const confirm = await prompt(`  Type the scope name to confirm: `);
+    if (!force) {
+        console.log(`\n  ${c.yellow}!${c.reset} This cannot be undone.`);
+        const confirm = await prompt(`  Type the scope name to confirm: `);
 
-    if (confirm.toLowerCase() !== scopeArg.toLowerCase() && confirm.toLowerCase() !== normalizedInput.toLowerCase()) {
-        console.log(`  ${c.dim}Cancelled.${c.reset}\n`);
-        return;
+        if (confirm.toLowerCase() !== scopeArg.toLowerCase() && confirm.toLowerCase() !== normalizedInput.toLowerCase()) {
+            console.log(`  ${c.dim}Cancelled.${c.reset}\n`);
+            return;
+        }
     }
 
     const result = await deleteScope(scopeArg);
@@ -2038,10 +2050,11 @@ function printUsage() {
     console.log(`    ${c.cyan}list${c.reset}                  ${c.dim}List all decisions (includes global)${c.reset}`);
     console.log(`    ${c.cyan}get${c.reset} ${c.gray}<id>${c.reset}              ${c.dim}View a decision${c.reset}`);
     console.log(`    ${c.cyan}search${c.reset} ${c.gray}"query"${c.reset}        ${c.dim}Semantic search${c.reset}`);
-    console.log(`    ${c.cyan}edit${c.reset} ${c.gray}<id>${c.reset}             ${c.dim}Edit a decision${c.reset}`);
+    console.log(`    ${c.cyan}edit${c.reset} ${c.gray}<id>${c.reset} ${c.gray}[-f]${c.reset}          ${c.dim}Edit a decision (use -f to skip global confirmation)${c.reset}`);
     console.log(`    ${c.cyan}deprecate${c.reset} ${c.gray}<id>${c.reset}        ${c.dim}Hide from search (reversible)${c.reset}`);
     console.log(`    ${c.cyan}activate${c.reset} ${c.gray}<id>${c.reset}         ${c.dim}Re-activate a deprecated decision${c.reset}`);
-    console.log(`    ${c.cyan}delete${c.reset} ${c.gray}<id>${c.reset}           ${c.dim}Permanently delete${c.reset}`);
+    console.log(`    ${c.cyan}delete${c.reset} ${c.gray}<id>${c.reset} ${c.gray}[-f]${c.reset}        ${c.dim}Permanently delete (use -f to skip confirmation)${c.reset}`);
+    console.log(`    ${c.cyan}delete-scope${c.reset} ${c.gray}<scope>${c.reset} ${c.gray}[-f]${c.reset} ${c.dim}Delete entire scope (use -f to skip confirmation)${c.reset}`);
     console.log('');
     console.log(`  ${c.bold}${c.white}Data${c.reset}`);
     console.log(`    ${c.cyan}export${c.reset} ${c.gray}[format]${c.reset}       ${c.dim}Export (md, json, csv)${c.reset}`);

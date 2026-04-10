@@ -59,6 +59,7 @@ export default function Footer() {
                         <ul className="space-y-2">
                             <li><a href="https://github.com/decisionnode/decisionnode" target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-white transition-colors">GitHub</a></li>
                             <li><a href="/decisionnode-docs.md" target="_blank" rel="noopener" className="text-white/50 hover:text-white transition-colors">Full Docs (Markdown)</a></li>
+                            <li><a href="/decisionnode-cli.md" target="_blank" rel="noopener" className="text-white/50 hover:text-white transition-colors">CLI Reference (Markdown)</a></li>
                             <li><Link to="/docs/workflows" className="text-white/50 hover:text-white transition-colors">Workflows</Link></li>
                         </ul>
                     </div>

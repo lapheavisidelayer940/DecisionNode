@@ -41,8 +41,8 @@ export default function CliReferencePage() {
             desc: "Semantically search decisions using vector embeddings. Only returns active decisions — deprecated decisions are excluded. Automatically includes global decisions. Requires a Gemini API key."
         },
         {
-            cmd: "decide edit <id>",
-            desc: "Interactively edit a decision's text, rationale, and constraints. Supports global: prefix."
+            cmd: "decide edit <id> [-f]",
+            desc: "Interactively edit a decision's text, rationale, and constraints. Supports global: prefix. Use -f or --force to skip global decision confirmation."
         },
         {
             cmd: "decide deprecate <id>",
@@ -53,12 +53,12 @@ export default function CliReferencePage() {
             desc: "Re-activate a deprecated decision. Immediately searchable again since the embedding is preserved. Supports global: prefix."
         },
         {
-            cmd: "decide delete <id>",
-            desc: "Permanently delete a decision and its embedding. Supports global: prefix. Consider deprecating instead if you might want it back."
+            cmd: "decide delete <id> [-f]",
+            desc: "Permanently delete a decision and its embedding. Supports global: prefix. Use -f or --force to skip confirmation. Consider deprecating instead if you might want it back."
         },
         {
-            cmd: "decide delete-scope <scope>",
-            desc: "Delete an entire scope and all decisions within it."
+            cmd: "decide delete-scope <scope> [-f]",
+            desc: "Delete an entire scope and all decisions within it. Use -f or --force to skip confirmation."
         },
     ];
 
