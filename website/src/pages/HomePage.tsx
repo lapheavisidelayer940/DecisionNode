@@ -538,15 +538,26 @@ export default function HomePage() {
                     <p className="text-zinc-500 max-w-xl mx-auto mb-8 text-sm">
                         If you find it useful or have ideas, contributions are welcome.
                     </p>
-                    <a
-                        href="https://github.com/decisionnode/decisionnode"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:border-white/20 transition-all text-sm font-medium"
-                    >
-                        Contribute on GitHub
-                        <ArrowRight className="w-4 h-4" />
-                    </a>
+                    <div className="flex items-center justify-center gap-3">
+                        <a
+                            href="https://github.com/decisionnode/decisionnode"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:border-white/20 transition-all text-sm font-medium"
+                        >
+                            Contribute on GitHub
+                            <ArrowRight className="w-4 h-4" />
+                        </a>
+                        <a
+                            href="https://www.npmjs.com/package/decisionnode"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:border-white/20 transition-all text-sm font-medium"
+                        >
+                            View on npm
+                            <ArrowRight className="w-4 h-4" />
+                        </a>
+                    </div>
                 </section>
             </div>
         </>
