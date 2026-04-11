@@ -1,6 +1,6 @@
 {
   "name": "decisionnode",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Record structured decisions once, search them from all your AI coding tools — a shared structured semantic memory store across Claude Code, Cursor, Windsurf, Antigravity, and every MCP client.",
   "keywords": [
     "decisions",

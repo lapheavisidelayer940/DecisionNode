@@ -2,6 +2,17 @@
 
 All notable changes to DecisionNode are documented here.
 
+## [0.5.2] - 2026-04-11
+
+### Added
+- `-f` / `--force` flag on `decide delete`, `decide delete-scope`, and `decide edit` to skip confirmation prompts — useful for scripts and AI agents
+- Standalone CLI reference markdown (`decisionnode-cli.md`) published at decisionnode.dev/decisionnode-cli.md for LLM consumption
+- CLI reference link added to docs sidebar and footer
+
+### Changed
+- Removed "Results for:" line from search output for cleaner display
+- Updated "Two interfaces" messaging: CLI is for you and your AI, MCP server is for your AI and you
+
 ## [0.5.1] - 2026-04-08
 
 ### Added
