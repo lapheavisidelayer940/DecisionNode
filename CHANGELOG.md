@@ -2,6 +2,16 @@
 
 All notable changes to DecisionNode are documented here.
 
+## [0.5.3] - 2026-04-11
+
+### Added
+- `.github/FUNDING.yml` for GitHub Sponsors
+- npm and license badge links in README (now clickable)
+- "View on npm" link in website footer
+
+### Fixed
+- `repository.url` in package.json now uses correct `git+https://...git` format — fixes Snyk/npm not linking to the GitHub repo (was causing "Last Commit: Unknown" and missing stats)
+
 ## [0.5.2] - 2026-04-11
 
 ### Added
