@@ -5,7 +5,7 @@
 <h1 align="center">DecisionNode</h1>
 
 <p align="center">
-  Record structured decisions once, search them from all your AI coding tools — a shared structured memory store across Claude Code, Cursor, Windsurf, Antigravity, and every MCP client.
+ CLI + Local MCP - A shared structured memory store across Claude Code, Cursor, Windsurf, Antigravity, and every MCP client. Semantically queryable.
 </p>
 
 <p align="center">
